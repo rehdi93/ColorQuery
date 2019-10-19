@@ -1,0 +1,122 @@
+﻿<Window x:Class="ColorQuery.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ColorQuery"
+        mc:Ignorable="d"
+        Title="Color Query" Height="600" Width="660" ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ContextMenu x:Key="ctxmColorCopy">
+                <MenuItem Header="{DynamicResource ui_CopyColor}" Command="Copy" />
+                <MenuItem Header="{DynamicResource ui_CopyColorAs}">
+                    <MenuItem Header="Rgb" Tag="{x:Static local:ColorFormat.RGB}" Command="Copy" InputGestureText=" "/>
+                    <MenuItem Header="Cmyk" Tag="{x:Static local:ColorFormat.CMYK}" Command="Copy" InputGestureText=" "/>
+                    <MenuItem Header="Hex" Tag="{x:Static local:ColorFormat.HEX}" Command="Copy" InputGestureText=" "/>
+                </MenuItem>
+            </ContextMenu>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
+        <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" />
+        <CommandBinding Command="DecreaseZoom" Executed="ZoomCmd_Exec" />
+        <CommandBinding Command="Close" Executed="CloseCmd_Exec" />
+        <CommandBinding Command="Copy" Executed="CopyCmd_Exec" CanExecute="CopyCmd_CanExec" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="OemPlus" Command="IncreaseZoom" CommandParameter="in" />
+        <KeyBinding Modifiers="Ctrl" Key="OemMinus" Command="DecreaseZoom" CommandParameter="out" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <Menu Name="menu">
+            <MenuItem Name="miOptions" Header="{DynamicResource ui_Options}">
+                <MenuItem Command="Refresh" />
+                <MenuItem Header="{DynamicResource ui_CopyColor}" Command="Copy"/>
+                <MenuItem Name="miZoomin" InputGestureText="Ctrl++" Command="IncreaseZoom"/>
+                <MenuItem Name="miZoomout" InputGestureText="Ctrl+-" Command="DecreaseZoom"/>
+                <Separator />
+                <MenuItem Header="{DynamicResource ui_About}" Click="miAbout_Click" />
+                <MenuItem Command="Close" />
+            </MenuItem>
+        </Menu>
+
+        <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
+            <Image x:Name="preview" Stretch="None" Cursor="Cross"
+                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove"
+                   MouseRightButtonUp="preview_MouseBtnClick" MouseLeftButtonDown="preview_MouseBtnClick"
+                   ContextMenu="{StaticResource ctxmColorCopy}">
+                <Image.RenderTransform>
+                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" 
+                                    CenterX="{Binding HorizontalOffset,ElementName=scrollview}"
+                                    CenterY="{Binding VerticalOffset,ElementName=scrollview}"/>
+                </Image.RenderTransform>
+            </Image>
+        </ScrollViewer>
+
+
+        <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
+            <GroupBox Header="{DynamicResource ui_Color}" HorizontalAlignment="Left"  Padding="3" VerticalAlignment="Stretch" Width="250">
+                <StackPanel Orientation="Horizontal">
+                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85"
+                               ContextMenu="{StaticResource ctxmColorCopy}">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding CurrentColor}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText}" MinWidth="60" />
+                </StackPanel>
+            </GroupBox>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <GroupBox Header="{DynamicResource ui_Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                        <StackPanel.Resources>
+                            <Style TargetType="RadioButton">
+                                <Setter Property="Margin" Value="3,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <RadioButton IsChecked="True" Checked="onColorFmtChanged"
+                                     Content="Rgb" Tag="{x:Static local:ColorFormat.RGB}"/>
+                        <RadioButton Checked="onColorFmtChanged" 
+                                     Content="Cmyk" Tag="{x:Static local:ColorFormat.CMYK}"/>
+                        <RadioButton Checked="onColorFmtChanged" 
+                                     Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Name="gbZoom" Header="Zoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
+                    <StackPanel>
+                        <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
+                        <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat=x\{0:f2\}}" 
+                                   HorizontalAlignment="Right" />
+                    </StackPanel>
+                </GroupBox>
+            </Grid>
+
+            <Button Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}" 
+                    Command="Refresh" VerticalAlignment="Bottom" MinWidth="80" Margin="5,0,0,0"/>
+        </StackPanel>
+
+
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock Name="statusTxt" Text="{Binding Status,FallbackValue=Status...}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

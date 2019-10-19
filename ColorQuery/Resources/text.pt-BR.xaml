@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <s:String x:Key="reslocale">pt-br</s:String>
+    
+    <s:String x:Key="ui_ColorCopied">Cor Copiada</s:String>
+    <s:String x:Key="ui_CopyColor">Copiar cor</s:String>
+    <s:String x:Key="ui_CopyColorAs">Copiar cor como</s:String>
+    <s:String x:Key="ui_Color">Cor</s:String>
+    <s:String x:Key="ui_Format">Formato</s:String>
+    <s:String x:Key="ui_Options">Opções</s:String>
+    <s:String x:Key="ui_About">Sobre</s:String>
+
+    <s:String x:Key="ui_AboutTitle">Sobre {0}</s:String>
+    <s:String x:Key="ui_Ver">Versão {0}</s:String>
+
+</ResourceDictionary>
