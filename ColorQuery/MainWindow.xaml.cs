@@ -38,39 +38,40 @@ namespace ColorQuery
 
         BitmapSource CaptureScreen()
         {
-            BitmapSource screen;
-
             // get screen bitmap
             var dpi = VisualTreeHelper.GetDpi(this);
-            var bm = new System.Drawing.Bitmap((int)(SystemParameters.VirtualScreenWidth * dpi.DpiScaleX),
-                                               (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY));
+            var pixfmt = PixelFormats.Bgr32;
+            int width = (int)(SystemParameters.VirtualScreenWidth * dpi.DpiScaleX),
+                height = (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY);
+            int stride = width * pixfmt.BitsPerPixel;
 
-            using (var g = System.Drawing.Graphics.FromImage(bm))
-                g.CopyFromScreen(0, 0, 0, 0, bm.Size);
+            BitmapImage screen;
 
-            // convert GDI bitmap into a WPF bitmap
-            IntPtr handle = IntPtr.Zero;
+            using (var bm = new System.Drawing.Bitmap(width, height))
+            {
+                bm.SetResolution(96f, 96f);
 
-            try
-            {
-                handle = bm.GetHbitmap();
-                screen = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(
-                    handle, IntPtr.Zero, Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
-            }
-            catch (System.ComponentModel.Win32Exception)
-            {
-                return null;
-            }
-            finally
-            {
-                if (handle != IntPtr.Zero)
-                    InterOp.DeleteObject(handle);
+                using (var g = System.Drawing.Graphics.FromImage(bm))
+                using (var mem = new System.IO.MemoryStream(stride * height))
+                {
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                    g.CopyFromScreen(0, 0, 0, 0, bm.Size);
+                    bm.Save(mem, System.Drawing.Imaging.ImageFormat.Png);
+
+                    screen = new BitmapImage();
+                    screen.BeginInit();
+                    screen.CacheOption = BitmapCacheOption.OnLoad;
+                    screen.StreamSource = mem;
+                    screen.EndInit();
+                }
             }
 
             return screen;
         }
-        
+
         // https://stackoverflow.com/a/14508110
         Color GetPixel(BitmapSource image, int x, int y)
         {
@@ -78,7 +79,7 @@ namespace ColorQuery
             {
                 try
                 {
-                    var crop = new CroppedBitmap(image, new System.Windows.Int32Rect(x, y, 1, 1));
+                    var crop = new CroppedBitmap(image, new Int32Rect(x, y, 1, 1));
                     var pixelbuff = new byte[4]; // [0] blue, green, red, alpha [3]
                     crop.CopyPixels(pixelbuff, 4, 0);
                     return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
