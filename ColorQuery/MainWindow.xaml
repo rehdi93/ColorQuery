@@ -22,8 +22,8 @@
 
     <Window.CommandBindings>
         <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
-        <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" />
-        <CommandBinding Command="DecreaseZoom" Executed="ZoomCmd_Exec" />
+        <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
+        <CommandBinding Command="DecreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
         <CommandBinding Command="Close" Executed="CloseCmd_Exec" />
         <CommandBinding Command="Copy" Executed="CopyCmd_Exec" CanExecute="CopyCmd_CanExec" />
     </Window.CommandBindings>
@@ -115,7 +115,7 @@
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock Name="statusTxt" Text="{Binding Status,FallbackValue=Status...}"/>
+                <TextBlock Name="statusTxt" Text="{Binding Status,FallbackValue=Status...}" FontSize="11"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

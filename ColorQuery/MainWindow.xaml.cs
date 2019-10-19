@@ -166,6 +166,19 @@ namespace ColorQuery
                 // ...
             }
         }
+        private void ZoomCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
+        {
+            var zoomcmd = (RoutedCommand)e.Command;
+
+            if (zoomcmd.Name == NavigationCommands.IncreaseZoom.Name)
+            {
+                e.CanExecute = m.Zoom < zoomSlider.Maximum;
+            }
+            else if (zoomcmd.Name == NavigationCommands.DecreaseZoom.Name)
+            {
+                e.CanExecute = m.Zoom > zoomSlider.Minimum;
+            }
+        }
 
         private void CloseCmd_Exec(object _, ExecutedRoutedEventArgs __) => Close();
 
