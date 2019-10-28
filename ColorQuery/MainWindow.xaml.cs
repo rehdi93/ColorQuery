@@ -54,7 +54,7 @@ namespace ColorQuery
                 bm.SetResolution(96f, 96f);
 
                 using (var g = System.Drawing.Graphics.FromImage(bm))
-                using (var mem = new System.IO.MemoryStream(stride * height))
+                using (var mem = new System.IO.MemoryStream())
                 {
                     g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                     g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
@@ -128,7 +128,7 @@ namespace ColorQuery
             else if (e.RoutedEvent.Name == MouseMoveEvent.Name)
             {
                 var pos = e.GetPosition((Image)sender);
-                m.Status = string.Format(Res.mousepos_fmt, pos);
+                m.Status = string.Format(Res.mousepos_fmt2, (int)pos.X, (int)pos.Y);
             }
         }
 
