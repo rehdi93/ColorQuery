@@ -13,11 +13,5 @@ namespace ColorQuery
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            ColorQuery.Properties.Locale.LoadTextResources();
-
-            base.OnStartup(e);
-        }
     }
 }

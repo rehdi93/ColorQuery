@@ -16,12 +16,9 @@ namespace ColorQuery
             btnOk.Click += delegate { Close(); };
             btnOk.Content = ApplicationCommands.Close.Text;
 
-            var titlefmt = (string)FindResource("ui_AboutTitle");
-            var versionfmt = (string)FindResource("ui_Ver");
-
-            Title = string.Format(titlefmt, this.AssemblyTitle);
+            Title = Properties.Resources.About + ' ' + this.AssemblyTitle;
             txtProductName.Text = this.AssemblyProduct;
-            txtVersion.Text = string.Format(versionfmt, this.AssemblyVersion);
+            txtVersion.Text = Properties.Resources.Version + " " + this.AssemblyVersion;
             txtCopyright.Text = this.AssemblyCopyright;
             weblink.NavigateUri = new Uri("https://github.com/rehdi93");
             weblink.RequestNavigate += (s,e) => {

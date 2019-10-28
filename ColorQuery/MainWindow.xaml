@@ -4,14 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ColorQuery"
+        xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
         Title="Color Query" Height="600" Width="660" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{DynamicResource ui_CopyColor}" Command="Copy" />
-                <MenuItem Header="{DynamicResource ui_CopyColorAs}">
+                <MenuItem Header="{p:Resx CopyColor}" Command="Copy" />
+                <MenuItem Header="{p:Resx CopyColorAs}">
                     <MenuItem Header="Rgb" Tag="{x:Static local:ColorFormat.RGB}" Command="Copy" InputGestureText=" "/>
                     <MenuItem Header="Cmyk" Tag="{x:Static local:ColorFormat.CMYK}" Command="Copy" InputGestureText=" "/>
                     <MenuItem Header="Hex" Tag="{x:Static local:ColorFormat.HEX}" Command="Copy" InputGestureText=" "/>
@@ -41,13 +42,13 @@
         </Grid.RowDefinitions>
 
         <Menu Name="menu">
-            <MenuItem Name="miOptions" Header="{DynamicResource ui_Options}">
+            <MenuItem Name="miOptions" Header="{p:Resx Options}">
                 <MenuItem Command="Refresh" />
-                <MenuItem Header="{DynamicResource ui_CopyColor}" Command="Copy"/>
-                <MenuItem Name="miZoomin" InputGestureText="Ctrl++" Command="IncreaseZoom"/>
-                <MenuItem Name="miZoomout" InputGestureText="Ctrl+-" Command="DecreaseZoom"/>
+                <MenuItem Header="{p:Resx CopyColor}" Command="Copy"/>
+                <MenuItem InputGestureText="Ctrl++" Command="IncreaseZoom"/>
+                <MenuItem InputGestureText="Ctrl+-" Command="DecreaseZoom"/>
                 <Separator />
-                <MenuItem Header="{DynamicResource ui_About}" Click="miAbout_Click" />
+                <MenuItem Header="{p:Resx About}" Click="miAbout_Click" />
                 <MenuItem Command="Close" />
             </MenuItem>
         </Menu>
@@ -67,15 +68,14 @@
 
 
         <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
-            <GroupBox Header="{DynamicResource ui_Color}" HorizontalAlignment="Left"  Padding="3" VerticalAlignment="Stretch" Width="250">
+            <GroupBox Header="{p:Resx Color}" HorizontalAlignment="Left"  Padding="3" VerticalAlignment="Stretch" Width="250">
                 <StackPanel Orientation="Horizontal">
-                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85"
-                               ContextMenu="{StaticResource ctxmColorCopy}">
+                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85" ContextMenu="{StaticResource ctxmColorCopy}">
                         <Rectangle.Fill>
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText}" MinWidth="60" />
+                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=#000000ff}" MinWidth="60" />
                 </StackPanel>
             </GroupBox>
 
@@ -84,7 +84,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <GroupBox Header="{DynamicResource ui_Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
+                <GroupBox Header="{p:Resx Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                         <StackPanel.Resources>
                             <Style TargetType="RadioButton">

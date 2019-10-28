@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Res = ColorQuery.Properties.Resources;
+
 
 namespace ColorQuery
 {
@@ -121,12 +123,12 @@ namespace ColorQuery
         {
             if (e.RoutedEvent.Name == MouseLeaveEvent.Name)
             {
-                m.Status = FindResource("mouseposOB") as string;
+                m.Status = string.Format(Res.mousepos_fmt, "OB");
             }
             else if (e.RoutedEvent.Name == MouseMoveEvent.Name)
             {
                 var pos = e.GetPosition((Image)sender);
-                m.Status = string.Format((string)FindResource("mousepos"), (int)pos.X, (int)pos.Y);
+                m.Status = string.Format(Res.mousepos_fmt, pos);
             }
         }
 
@@ -140,7 +142,7 @@ namespace ColorQuery
             }
 
             Clipboard.SetText(m.Text);
-            m.Status = FindResource("ui_ColorCopied") as string;
+            m.Status = Res.ColorCopied;
         }
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {
@@ -153,12 +155,10 @@ namespace ColorQuery
 
             if (zoomcmd.Name == NavigationCommands.IncreaseZoom.Name)
             {
-                //Slider.IncreaseLarge.Execute(null, zoomSlider);
                 m.Zoom += zoomSlider.LargeChange;
             }
             else if (zoomcmd.Name == NavigationCommands.DecreaseZoom.Name)
             {
-                //Slider.DecreaseLarge.Execute(null, zoomSlider);
                 m.Zoom -= zoomSlider.LargeChange;
             }
             else if (zoomcmd.Name == NavigationCommands.Zoom.Name)
