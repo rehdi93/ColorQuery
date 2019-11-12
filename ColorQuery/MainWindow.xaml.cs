@@ -26,7 +26,9 @@ namespace ColorQuery
         {
             DataContext = m;
             InitializeComponent();
+
             preview.Source = CaptureScreen();
+
             m.PropertyChanged += Model_PropertyChanged;
             // ...
             gbZoom.Header = NavigationCommands.Zoom.Text;
@@ -86,9 +88,9 @@ namespace ColorQuery
         
         private void RefreshCmd_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            // hide window, change window style so it doesn't play the minimize animation
+            // hide window, set style to None so it becomes invisible immediately
             var wstyle = WindowStyle;
-            WindowStyle = WindowStyle.ToolWindow;
+            WindowStyle = WindowStyle.None;
             Hide();
 
             preview.Source = CaptureScreen();
