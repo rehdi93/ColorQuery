@@ -42,34 +42,27 @@ namespace ColorQuery
         {
             // get screen bitmap
             var dpi = VisualTreeHelper.GetDpi(this);
-            var pixfmt = PixelFormats.Bgr32;
             int width = (int)(SystemParameters.VirtualScreenWidth * dpi.DpiScaleX),
                 height = (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY);
-            int stride = width * pixfmt.BitsPerPixel;
 
-            BitmapImage screen;
+            using var bm = new System.Drawing.Bitmap(width, height);
+            bm.SetResolution(96f, 96f);
 
-            using (var bm = new System.Drawing.Bitmap(width, height))
-            {
-                bm.SetResolution(96f, 96f);
+            using var g = System.Drawing.Graphics.FromImage(bm);
 
-                using (var g = System.Drawing.Graphics.FromImage(bm))
-                using (var mem = new System.IO.MemoryStream())
-                {
-                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            g.CopyFromScreen(0, 0, 0, 0, bm.Size);
 
-                    g.CopyFromScreen(0, 0, 0, 0, bm.Size);
-                    bm.Save(mem, System.Drawing.Imaging.ImageFormat.Png);
+            using var mem = new System.IO.MemoryStream();
+            bm.Save(mem, System.Drawing.Imaging.ImageFormat.Png);
 
-                    screen = new BitmapImage();
-                    screen.BeginInit();
-                    screen.CacheOption = BitmapCacheOption.OnLoad;
-                    screen.StreamSource = mem;
-                    screen.EndInit();
-                }
-            }
+            var screen = new BitmapImage();
+            screen.BeginInit();
+            screen.CacheOption = BitmapCacheOption.OnLoad;
+            screen.StreamSource = mem;
+            screen.EndInit();
 
             return screen;
         }
@@ -77,21 +70,17 @@ namespace ColorQuery
         // https://stackoverflow.com/a/14508110
         Color GetPixel(BitmapSource image, int x, int y)
         {
-            if (image != null)
+            try
             {
-                try
-                {
-                    var crop = new CroppedBitmap(image, new Int32Rect(x, y, 1, 1));
-                    var pixelbuff = new byte[4]; // [0] blue, green, red, alpha [3]
-                    crop.CopyPixels(pixelbuff, 4, 0);
-                    return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
-                }
-                catch (Exception)
-                {
-                }
+                var crop = new CroppedBitmap(image, new Int32Rect(x, y, 1, 1));
+                var pixelbuff = new byte[4]; // [0] blue, green, red, alpha [3]
+                crop.CopyPixels(pixelbuff, 4, 0);
+                return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
             }
-
-            return Colors.Transparent;
+            catch (Exception)
+            {
+                return Colors.Transparent;
+            }
         }
 
         

@@ -9,6 +9,7 @@
     <Copyright>Pedro Oliva Rodrigues (c) 2019</Copyright>
     <Product>Color Query</Product>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Label="nuget">
