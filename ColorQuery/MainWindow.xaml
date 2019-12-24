@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ColorQuery"
         xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
-        Title="Color Query" Height="600" Width="660" ResizeMode="CanResizeWithGrip">
+        Title="Color Query" Width="660" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -18,6 +18,13 @@
                     <MenuItem Header="Hex" Tag="{x:Static local:ColorFormat.HEX}" Command="Copy" InputGestureText=" "/>
                 </MenuItem>
             </ContextMenu>
+
+            <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
+                <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            </Style>
+            <Style x:Key="iconBtn" TargetType="Button">
+                <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -35,23 +42,36 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="25"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
-        <Menu Name="menu">
-            <MenuItem Name="miOptions" Header="{p:Resx Options}">
-                <MenuItem Command="Refresh" />
-                <MenuItem Header="{p:Resx CopyColor}" Command="Copy"/>
-                <MenuItem InputGestureText="Ctrl++" Command="IncreaseZoom"/>
-                <MenuItem InputGestureText="Ctrl+-" Command="DecreaseZoom"/>
-                <Separator />
-                <MenuItem Header="{p:Resx About}" Click="miAbout_Click" />
-                <MenuItem Command="Close" />
-            </MenuItem>
-        </Menu>
+
+        <ToolBarTray Name="tooltray">
+            <ToolBar>
+                <Menu>
+                    <MenuItem Command="Refresh" Header="&#xE117;" />
+                    <MenuItem Command="Copy" Header="&#xE16f;" />
+                    <MenuItem Click="miAbout_Click" ToolTip="{p:Resx About}">
+                        <MenuItem.Header>
+                            <Border BorderThickness="1.15" BorderBrush="Black"
+                                    Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
+                                    CornerRadius="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}">
+                                <TextBlock TextAlignment="Center" FontSize="10.5">i</TextBlock>
+                            </Border>
+                        </MenuItem.Header>
+                    </MenuItem>
+                </Menu>
+            </ToolBar>
+            <ToolBar>
+                <Menu>  
+                    <MenuItem Command="IncreaseZoom" Header="&#xE12e;" InputGestureText="Ctrl++" />
+                    <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
+                </Menu>
+            </ToolBar>
+        </ToolBarTray>
 
         <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
             <Image x:Name="preview" Stretch="Fill" Cursor="Cross"
@@ -75,7 +95,7 @@
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=#000000ff}" MinWidth="60" />
+                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="60" />
                 </StackPanel>
             </GroupBox>
 
@@ -92,18 +112,17 @@
                             </Style>
                         </StackPanel.Resources>
                         <RadioButton IsChecked="True" Checked="onColorFmtChanged"
-                                     Content="Rgb" Tag="{x:Static local:ColorFormat.RGB}"/>
+                                     Content="RGB" Tag="{x:Static local:ColorFormat.RGB}"/>
                         <RadioButton Checked="onColorFmtChanged" 
-                                     Content="Cmyk" Tag="{x:Static local:ColorFormat.CMYK}"/>
+                                     Content="CMYK" Tag="{x:Static local:ColorFormat.CMYK}"/>
                         <RadioButton Checked="onColorFmtChanged" 
                                      Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Name="gbZoom" Header="Zoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
+                <GroupBox Name="gbZoom" Header="{x:Static NavigationCommands.Zoom}" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
                     <StackPanel>
                         <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
-                        <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat=x\{0:f2\}}" 
-                                   HorizontalAlignment="Right" />
+                        <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
                     </StackPanel>
                 </GroupBox>
             </Grid>

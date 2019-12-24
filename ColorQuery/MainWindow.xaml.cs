@@ -29,16 +29,27 @@ namespace ColorQuery
 
             preview.Source = CaptureScreen();
 
-            m.PropertyChanged += Model_PropertyChanged;
-            // ...
-            gbZoom.Header = NavigationCommands.Zoom.Text;
+            // set toolbar item tooltips
+            var items = tooltray.ToolBars
+                .SelectMany(t => t.Items.Cast<Menu>())
+                .SelectMany(o => o.Items.Cast<MenuItem>())
+                .Where(mi => mi.Command != null);
+
+            foreach (MenuItem mi in items)
+            {
+                var cmd = (RoutedUICommand)mi.Command;
+                mi.ToolTip = cmd.Text;
+
+                if (!string.IsNullOrEmpty(mi.InputGestureText))
+                {
+                    mi.ToolTip += " (" + mi.InputGestureText + ")";
+                }
+            }
         }
 
-        private void Model_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-        }
 
         ColorQueryModel m = new ColorQueryModel();
+
 
         BitmapSource CaptureScreen()
         {
@@ -163,11 +174,11 @@ namespace ColorQuery
 
             if (zoomcmd.Name == NavigationCommands.IncreaseZoom.Name)
             {
-                e.CanExecute = m.Zoom < zoomSlider.Maximum;
+                e.CanExecute = m.Zoom < zoomSlider?.Maximum;
             }
             else if (zoomcmd.Name == NavigationCommands.DecreaseZoom.Name)
             {
-                e.CanExecute = m.Zoom > zoomSlider.Minimum;
+                e.CanExecute = m.Zoom > zoomSlider?.Minimum;
             }
         }
 
