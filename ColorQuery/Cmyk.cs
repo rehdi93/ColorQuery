@@ -2,7 +2,6 @@
 
 namespace ColorQuery
 {
-    using GDIColor = System.Drawing.Color;
     using Color = System.Windows.Media.Color;
 
     public struct Cmyk
@@ -39,7 +38,6 @@ namespace ColorQuery
             y = (1 - b - k) / (1 - k);
         }
 
-        public Cmyk(GDIColor color) : this(color.R, color.G, color.B) {}
         public Cmyk(Color color) : this(color.R, color.G, color.B) {}
 
 
@@ -95,21 +93,27 @@ namespace ColorQuery
         public static bool operator ==(Cmyk left, Cmyk right) => left.Equals(right);
         public static bool operator !=(Cmyk left, Cmyk right) => !left.Equals(right);
 
-        public static implicit operator GDIColor(Cmyk cmyk)
-        {
-            var k = cmyk.K;
-            return GDIColor.FromArgb(ftob(cmyk.C, k), ftob(cmyk.M, k), ftob(cmyk.Y, k));
-        }
         public static implicit operator Color(Cmyk cmyk)
         {
-            var k = cmyk.K;
-            return Color.FromRgb(ftob(cmyk.C, k), ftob(cmyk.M, k), ftob(cmyk.Y, k));
+            (byte r, byte g, byte b) = cmyk.to_rgb();
+            return Color.FromRgb(r, g, b);
         }
 
-        // cmyk float to rgb byte
-        static byte ftob(float val, float k) => (byte)(255 * (1 - val) * (1 - k));
-
+        (byte,byte,byte) to_rgb()
+        {
+            return (
+                (byte)(255 * (1 - c) * (1 - k)),
+                (byte)(255 * (1 - m) * (1 - k)),
+                (byte)(255 * (1 - y) * (1 - k))
+            );
+        }
         static float Clamp(float nValue) => Math.Min(MaxValue, Math.Max(MinValue, nValue));
+
+        private void Deconstruct(out float c, out float m, out float y, out float k)
+        {
+            c = this.c; m = this.m;
+            y = this.y; k = this.k;
+        }
 
         float c, m, y, k;
     }
