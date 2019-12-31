@@ -30,12 +30,14 @@ namespace ColorQuery
             preview.Source = CaptureScreen();
 
             // set toolbar item tooltips
-            var items = tooltray.ToolBars
-                .SelectMany(t => t.Items.Cast<Menu>())
-                .SelectMany(o => o.Items.Cast<MenuItem>())
-                .Where(mi => mi.Command != null);
+            var toolmenuitems = tooltray.ToolBars
+                .SelectMany(t => t.Items.Cast<object>())
+                .Where(o => o is Menu).Cast<Menu>()
+                .SelectMany(t => t.Items.Cast<object>())
+                .Where(obj => obj is MenuItem mi && mi.Command != null);
+            ;
 
-            foreach (MenuItem mi in items)
+            foreach (MenuItem mi in toolmenuitems)
             {
                 var cmd = (RoutedUICommand)mi.Command;
                 mi.ToolTip = cmd.Text;

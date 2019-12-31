@@ -6,24 +6,22 @@
         xmlns:local="clr-namespace:ColorQuery"
         xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
-        Title="Color Query" Width="660" Height="600" ResizeMode="CanResizeWithGrip">
+        Title="Color Query" Width="640" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
                 <MenuItem Header="{p:Resx CopyColor}" Command="Copy" />
                 <MenuItem Header="{p:Resx CopyColorAs}">
-                    <MenuItem Header="Rgb" Tag="{x:Static local:ColorFormat.RGB}" Command="Copy" InputGestureText=" "/>
-                    <MenuItem Header="Cmyk" Tag="{x:Static local:ColorFormat.CMYK}" Command="Copy" InputGestureText=" "/>
+                    <MenuItem Header="RGB" Tag="{x:Static local:ColorFormat.RGB}" Command="Copy" InputGestureText=" "/>
+                    <MenuItem Header="CMYK" Tag="{x:Static local:ColorFormat.CMYK}" Command="Copy" InputGestureText=" "/>
                     <MenuItem Header="Hex" Tag="{x:Static local:ColorFormat.HEX}" Command="Copy" InputGestureText=" "/>
                 </MenuItem>
             </ContextMenu>
 
             <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
                 <Setter Property="FontFamily" Value="Segoe UI Symbol" />
-            </Style>
-            <Style x:Key="iconBtn" TargetType="Button">
-                <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+                <Setter Property="FontSize" Value="13" />
             </Style>
         </ResourceDictionary>
     </Window.Resources>
@@ -42,7 +40,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="20"/>
@@ -56,17 +54,16 @@
                     <MenuItem Command="Copy" Header="&#xE16f;" />
                     <MenuItem Click="miAbout_Click" ToolTip="{p:Resx About}">
                         <MenuItem.Header>
-                            <Border BorderThickness="1.15" BorderBrush="Black"
-                                    Width="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}"
-                                    CornerRadius="{Binding ActualHeight, Mode=OneWay, RelativeSource={RelativeSource Self}}">
-                                <TextBlock TextAlignment="Center" FontSize="10.5">i</TextBlock>
+                            <Border BorderThickness="1.3" BorderBrush="Black"
+                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" Margin="-2,-1">
+                                <TextBlock TextAlignment="Center">i</TextBlock>
                             </Border>
                         </MenuItem.Header>
                     </MenuItem>
                 </Menu>
-            </ToolBar>
-            <ToolBar>
-                <Menu>  
+                <Separator />
+                <Menu>
                     <MenuItem Command="IncreaseZoom" Header="&#xE12e;" InputGestureText="Ctrl++" />
                     <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
                 </Menu>
@@ -95,7 +92,7 @@
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="60" />
+                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="60" FontFamily="Consolas, DejaVu Sans Mono" />
                 </StackPanel>
             </GroupBox>
 
