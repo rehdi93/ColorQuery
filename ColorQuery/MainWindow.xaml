@@ -52,19 +52,17 @@
                 <Menu>
                     <MenuItem Command="Refresh" Header="&#xE117;" />
                     <MenuItem Command="Copy" Header="&#xE16f;" />
-                    <MenuItem Click="miAbout_Click" ToolTip="{p:Resx About}">
-                        <MenuItem.Header>
-                            <Border BorderThickness="1.3" BorderBrush="Black"
-                                    Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
-                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" Margin="-2,-1">
-                                <TextBlock TextAlignment="Center">i</TextBlock>
-                            </Border>
-                        </MenuItem.Header>
-                    </MenuItem>
                 </Menu>
+                <Button Click="miAbout_Click" ToolTip="{p:Resx About}" MinWidth="32">
+                    <Border BorderThickness="1.2" BorderBrush="Black" Margin="0,-2,0,0"
+                            Width="{Binding ActualHeight, RelativeSource={RelativeSource Self}}"
+                            CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" >
+                        <TextBlock TextAlignment="Center" FontSize="11.5">i</TextBlock>
+                    </Border>
+                </Button>
                 <Separator />
                 <Menu>
-                    <MenuItem Command="IncreaseZoom" Header="&#xE12e;" InputGestureText="Ctrl++" />
+                    <MenuItem Command="IncreaseZoom" Header="&#xE12E;" InputGestureText="Ctrl++" />
                     <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
                 </Menu>
             </ToolBar>
