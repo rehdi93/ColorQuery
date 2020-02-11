@@ -99,17 +99,17 @@ namespace ColorQuery
         }
 
         
-        private void RefreshCmd_Executed(object sender, ExecutedRoutedEventArgs e)
+        private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            // hide window, set style to None so it becomes invisible immediately
-            var wstyle = WindowStyle;
-            WindowStyle = WindowStyle.None;
-            Hide();
-
+            // hide window by moving it offscreen
+            var bounds = RestoreBounds;
+            Left = -Width;
+            Top = -Height;
+            
             preview.Source = CaptureScreen();
 
-            Show();
-            WindowStyle = wstyle;
+            Left = bounds.Left;
+            Top = bounds.Top;
         }
 
         private void preview_MouseBtnClick(object sender, MouseButtonEventArgs e)
