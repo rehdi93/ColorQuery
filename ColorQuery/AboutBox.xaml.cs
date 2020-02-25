@@ -18,9 +18,8 @@ namespace ColorQuery
 
             Title = Properties.Resources.About + ' ' + this.AssemblyTitle;
             txtProductName.Text = this.AssemblyProduct;
-            txtVersion.Text = Properties.Resources.Version + " " + this.AssemblyVersion;
+            txtVersion.Text = Properties.Resources.Version + ' ' + this.AssemblyVersion;
             txtCopyright.Text = this.AssemblyCopyright;
-            weblink.NavigateUri = new Uri("https://github.com/rehdi93");
             weblink.RequestNavigate += (s,e) => {
                 System.Diagnostics.Process.Start(e.Uri.ToString());
                 e.Handled = true;

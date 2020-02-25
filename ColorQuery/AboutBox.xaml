@@ -39,7 +39,7 @@
                 <TextBlock x:Name="txtVersion">Version</TextBlock>
                 <TextBlock x:Name="txtCopyright">Copyright</TextBlock>
                 <TextBlock>
-                <Hyperlink Name="weblink">Website</Hyperlink>
+                    <Hyperlink Name="weblink" NavigateUri="https://github.com/rehdi93/ColorQuery">Github</Hyperlink>
                 </TextBlock>
             </StackPanel>
         </Grid>
@@ -50,7 +50,7 @@
             </Rectangle.Fill>
         </Rectangle>
 
-        <Button x:Name="btnOk" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="70" MinHeight="20" Margin="5"/>
+        <Button x:Name="btnOk" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" MinWidth="70" MinHeight="20" Margin="10">Close</Button>
 
     </Grid>
 </Window>
