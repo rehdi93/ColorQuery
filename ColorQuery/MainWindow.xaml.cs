@@ -51,8 +51,6 @@ namespace ColorQuery
             miGoHome.ToolTip = NavigationCommands.BrowseHome.Text;
         }
 
-
-
         BitmapSource CaptureScreen(IRect screenRect)
         {
             using var bm = new System.Drawing.Bitmap(screenRect.Width, screenRect.Height);
@@ -82,7 +80,7 @@ namespace ColorQuery
         {
             try
             {
-                var crop = new CroppedBitmap(image, new Int32Rect(x, y, 1, 1));
+                var crop = new CroppedBitmap(image, new IRect(x, y, 1, 1));
                 var pixelbuff = new byte[4]; // [0] blue, green, red, alpha [3]
                 crop.CopyPixels(pixelbuff, 4, 0);
                 return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
@@ -107,6 +105,7 @@ namespace ColorQuery
         private void ScrollHome()
         {
             var rect = GetScreenRect();
+            // displays to the left of main have negative coords
             scrollview.ScrollToHorizontalOffset(Math.Abs(rect.X));
             scrollview.ScrollToVerticalOffset(Math.Abs(rect.Y));
         }
@@ -119,7 +118,7 @@ namespace ColorQuery
             // hide window by moving it offscreen, make sure to
             // get the dpi before moving
             var bounds = RestoreBounds;
-            Left = int.MaxValue; Top = Left;
+            Left = Top = int.MaxValue;
             
             preview.Source = CaptureScreen(rect);
 
