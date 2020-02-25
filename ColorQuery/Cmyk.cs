@@ -23,19 +23,21 @@ namespace ColorQuery
                 // black
                 c = m = y = k = 0;
             }
+            else
+            {
+                // adust RGB range
+                // [0-255] -> [0-1]
+                float r = red / 255f;
+                float g = green / 255f;
+                float b = blue / 255f;
 
-            // adust RGB range
-            // [0-255] -> [0-1]
-            float r = red / 255f;
-            float g = green / 255f;
-            float b = blue / 255f;
+                // extract out K [0-1]
+                k = 1 - Math.Max(r, Math.Max(g, b));
 
-            // extract out K [0-1]
-            k = 1 - Math.Max(r, Math.Max(g, b));
-
-            c = (1 - r - k) / (1 - k);
-            m = (1 - g - k) / (1 - k);
-            y = (1 - b - k) / (1 - k);
+                c = (1 - r - k) / (1 - k);
+                m = (1 - g - k) / (1 - k);
+                y = (1 - b - k) / (1 - k);
+            }
         }
 
         public Cmyk(Color color) : this(color.R, color.G, color.B) {}

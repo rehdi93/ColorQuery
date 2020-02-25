@@ -103,18 +103,16 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <GroupBox Header="{p:Resx Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" 
+                                RadioButton.Checked="onColorFmtChanged">
                         <StackPanel.Resources>
                             <Style TargetType="RadioButton">
                                 <Setter Property="Margin" Value="3,0"/>
                             </Style>
                         </StackPanel.Resources>
-                        <RadioButton IsChecked="True" Checked="onColorFmtChanged"
-                                     Content="RGB" Tag="{x:Static local:ColorFormat.RGB}"/>
-                        <RadioButton Checked="onColorFmtChanged" 
-                                     Content="CMYK" Tag="{x:Static local:ColorFormat.CMYK}"/>
-                        <RadioButton Checked="onColorFmtChanged" 
-                                     Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
+                        <RadioButton IsChecked="True" Content="RGB" Tag="{x:Static local:ColorFormat.RGB}"/>
+                        <RadioButton Content="CMYK" Tag="{x:Static local:ColorFormat.CMYK}"/>
+                        <RadioButton Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Name="gbZoom" Header="{x:Static NavigationCommands.Zoom}" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">

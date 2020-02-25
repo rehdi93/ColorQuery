@@ -133,17 +133,21 @@ namespace ColorQuery
 
             var pos = e.GetPosition(image);
             model.CurrentColor = GetPixel(bm, (int)pos.X, (int)pos.Y);
+            model.Status = string.Format(Res.mousepos_fmt2, (int)pos.X, (int)pos.Y);
         }
+
+        int lastMouseMove = 0;
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.RoutedEvent.Name == MouseLeaveEvent.Name)
             {
                 model.Status = string.Format(Res.mousepos_fmt, "OB");
             }
-            else if (e.RoutedEvent.Name == MouseMoveEvent.Name)
+            else if (e.RoutedEvent.Name == MouseMoveEvent.Name && e.Timestamp - lastMouseMove >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
                 model.Status = string.Format(Res.mousepos_fmt2, (int)pos.X, (int)pos.Y);
+                lastMouseMove = e.Timestamp;
             }
         }
 

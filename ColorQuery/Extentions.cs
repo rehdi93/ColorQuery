@@ -4,10 +4,10 @@
 
     static class Extentions
     {
-        public static string ToHexString(this Color c, bool hashtag=true)
+        public static string ToHexString(this Color c, bool pound=true)
         {
             var val = $"{c.R:X2}{c.G:X2}{c.B:X2}";
-            return hashtag ? '#' + val : val;
+            return pound ? '#' + val : val;
         }
     }
 
