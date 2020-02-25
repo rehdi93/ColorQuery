@@ -131,11 +131,8 @@ namespace ColorQuery
             var image = (Image)sender;
             var bm = (BitmapSource)image.Source;
 
-            if (e.LeftButton == MouseButtonState.Pressed || e.RightButton == MouseButtonState.Released)
-            {
-                var pos = e.GetPosition(image);
-                model.CurrentColor = GetPixel(bm, (int)pos.X, (int)pos.Y);
-            }
+            var pos = e.GetPosition(image);
+            model.CurrentColor = GetPixel(bm, (int)pos.X, (int)pos.Y);
         }
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
@@ -152,14 +149,11 @@ namespace ColorQuery
 
         private void CopyCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var element = (FrameworkElement)e.Source;
+            var format = model.CurrentFormat;
+            if (e.Parameter is ColorFormat fmt)
+                format = fmt;
 
-            if (element.Tag is ColorFormat fmt)
-            {
-                model.CurrentFormat = fmt;
-            }
-
-            Clipboard.SetText(model.Text);
+            Clipboard.SetText(model.GetText(format));
             model.Status = Res.ColorCopied;
         }
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)

@@ -6,16 +6,16 @@
         xmlns:local="clr-namespace:ColorQuery"
         xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
-        Title="Color Query" Width="640" Height="600" ResizeMode="CanResizeWithGrip">
+        Title="Color Query" Width="800" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
                 <MenuItem Header="{p:Resx CopyColor}" Command="Copy" />
                 <MenuItem Header="{p:Resx CopyColorAs}">
-                    <MenuItem Header="RGB" Tag="{x:Static local:ColorFormat.RGB}" Command="Copy" InputGestureText=" "/>
-                    <MenuItem Header="CMYK" Tag="{x:Static local:ColorFormat.CMYK}" Command="Copy" InputGestureText=" "/>
-                    <MenuItem Header="Hex" Tag="{x:Static local:ColorFormat.HEX}" Command="Copy" InputGestureText=" "/>
+                    <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}" InputGestureText=" "/>
+                    <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
+                    <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}" InputGestureText=" "/>
                 </MenuItem>
             </ContextMenu>
 

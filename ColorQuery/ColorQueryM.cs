@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
-using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using MvvmHelpers;
-using System.Globalization;
-using System.Windows;
+
 
 namespace ColorQuery
 {
@@ -52,9 +49,9 @@ namespace ColorQuery
         }
 
 
-        public string UiText => FormatColorInfo(true);
-        public string Text => FormatColorInfo(false);
+        public string UiText => FormatColorInfo(true, this.format);
 
+        public string GetText(ColorFormat fmt) => FormatColorInfo(false, fmt);
 
 
         bool AddRecent(Color color)
@@ -73,7 +70,7 @@ namespace ColorQuery
             return false;
         }
 
-        string FormatColorInfo(bool ui)
+        string FormatColorInfo(bool ui, ColorFormat format)
         {
             string infoText = "...";
 
