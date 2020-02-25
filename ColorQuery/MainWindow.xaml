@@ -26,6 +26,10 @@
         </ResourceDictionary>
     </Window.Resources>
 
+    <Window.DataContext>
+        <local:ColorQueryModel x:Name="model" />
+    </Window.DataContext>
+    
     <Window.CommandBindings>
         <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
         <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
@@ -62,6 +66,7 @@
                 <Menu>
                     <MenuItem Command="IncreaseZoom" Header="&#xE12E;" InputGestureText="Ctrl++" />
                     <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
+                    <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="⌂" FontSize="15" Margin="0,-2,0,0" />
                 </Menu>
             </ToolBar>
         </ToolBarTray>

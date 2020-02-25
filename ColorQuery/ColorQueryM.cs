@@ -8,7 +8,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MvvmHelpers;
 using System.Globalization;
-using IPoint = System.Drawing.Point;
 using System.Windows;
 
 namespace ColorQuery
