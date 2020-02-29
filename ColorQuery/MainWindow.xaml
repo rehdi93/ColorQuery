@@ -23,13 +23,26 @@
                 <Setter Property="FontFamily" Value="Segoe UI Symbol" />
                 <Setter Property="FontSize" Value="13" />
             </Style>
+
+            <x:Array x:Key="designColorHist" Type="Color">
+                <Color>Red</Color>
+                <Color>Green</Color>
+                <Color>Blue</Color>
+                <Color>Cyan</Color>
+                <Color>Magenta</Color>
+                <Color>Yellow</Color>
+                <Color>Red</Color>
+                <Color>Green</Color>
+                <Color>Blue</Color>
+                <Color>Cyan</Color>
+            </x:Array>
         </ResourceDictionary>
     </Window.Resources>
 
     <Window.DataContext>
         <local:ColorQueryModel x:Name="model" />
     </Window.DataContext>
-    
+
     <Window.CommandBindings>
         <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
         <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
@@ -47,7 +60,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
 
@@ -69,6 +82,13 @@
                     <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="⌂" FontSize="15" Margin="0,-2,0,0" />
                 </Menu>
             </ToolBar>
+            <ToolBar>
+                <Menu>
+                    <MenuItem Header="History" ItemsSource="{StaticResource designColorHist}">
+                        
+                    </MenuItem>
+                </Menu>
+            </ToolBar>
         </ToolBarTray>
 
         <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
@@ -86,14 +106,30 @@
 
 
         <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
-            <GroupBox Header="{p:Resx Color}" HorizontalAlignment="Left"  Padding="3" VerticalAlignment="Stretch" Width="250">
+            <GroupBox Header="{p:Resx Color}" Padding="3" MinWidth="250">
                 <StackPanel Orientation="Horizontal">
-                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85" ContextMenu="{StaticResource ctxmColorCopy}">
+                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85" ContextMenu="{StaticResource ctxmColorCopy}" VerticalAlignment="Top">
                         <Rectangle.Fill>
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="60" FontFamily="Consolas, DejaVu Sans Mono" />
+                    <ListView Name="colorHist" ItemsSource="{StaticResource designColorHist}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel MaxWidth="150" MaxHeight="120"/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle Stroke="Black" Width="20" Height="20">
+                                    <Rectangle.Fill>
+                                        <SolidColorBrush Color="{Binding}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
                 </StackPanel>
             </GroupBox>
 
