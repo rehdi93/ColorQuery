@@ -99,6 +99,27 @@
             </Image>
         </ScrollViewer>
 
+        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True">
+            <StackPanel Background="White" Margin="3">
+                <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel MaxWidth="150" MaxHeight="120"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Rectangle Stroke="Black" Width="20" Height="20">
+                                <Rectangle.Fill>
+                                    <SolidColorBrush Color="{Binding}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <Button Click="histClear_Click">Clear</Button>
+            </StackPanel>
+        </Popup>
 
         <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
             <GroupBox Header="{p:Resx Color}" Padding="3" MinWidth="250">
@@ -110,31 +131,6 @@
                     </Rectangle>
                     <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" />
                     <ToggleButton Name="histBtn" VerticalAlignment="Bottom" Margin="5,2" IsEnabled="{Binding HasItems, ElementName=histList}" Content="{p:Resx Key=History}" />
-                    <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True"
-                           IsOpen="{Binding IsChecked,ElementName=histBtn}" PlacementTarget="{Binding ElementName=histBtn}">
-                        <StackPanel Background="White" Margin="3">
-                            <!--<StackPanel.Effect>
-                                <DropShadowEffect />
-                            </StackPanel.Effect>-->
-                            <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
-                                <ListView.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel MaxWidth="150" MaxHeight="120"/>
-                                    </ItemsPanelTemplate>
-                                </ListView.ItemsPanel>
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Rectangle Stroke="Black" Width="20" Height="20">
-                                            <Rectangle.Fill>
-                                                <SolidColorBrush Color="{Binding}" />
-                                            </Rectangle.Fill>
-                                        </Rectangle>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
-                            <Button Click="histClear_Click">Clear</Button>
-                        </StackPanel>
-                    </Popup>
                 </StackPanel>
             </GroupBox>
 

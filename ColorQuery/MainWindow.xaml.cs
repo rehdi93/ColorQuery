@@ -234,5 +234,12 @@ namespace ColorQuery
             e.Handled = true;
         }
 
+        private void histShow_Checked(object sender, RoutedEventArgs e)
+        {
+            var ctrl = (System.Windows.Controls.Primitives.ToggleButton)sender;
+            histPopup.PlacementTarget = ctrl;
+            histPopup.IsOpen = ctrl.IsChecked.Value;
+
+        }
     }
 }
