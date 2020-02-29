@@ -81,7 +81,7 @@
                 <Menu>
                     <MenuItem Command="IncreaseZoom" Header="&#xE12E;" InputGestureText="Ctrl++" />
                     <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
-                    <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="⌂" FontSize="15" Margin="0,-2,0,0" />
+                    <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="&#xE1E4;" FontSize="15" Margin="0,-2,0,0" />
                 </Menu>
             </ToolBar>
         </ToolBarTray>
