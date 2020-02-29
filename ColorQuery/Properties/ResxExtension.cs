@@ -1,16 +1,16 @@
 ﻿using System;
 
-
 namespace ColorQuery.Properties
 {
     public class ResxExtension : System.Windows.Markup.MarkupExtension
     {
         public string Key { get; set; }
 
-        public ResxExtension(object key)
+        public ResxExtension(string key)
         {
-            Key = key as string;
+            Key = key;
         }
+        public ResxExtension() { }
 
         public override object ProvideValue(IServiceProvider _)
         {
@@ -20,6 +20,10 @@ namespace ColorQuery.Properties
             try
             {
                 result = Resources.ResourceManager.GetString(Key);
+                if (string.IsNullOrEmpty(result))
+                {
+                    result = Key;
+                }
             }
             catch (ArgumentNullException)
             {
@@ -34,5 +38,4 @@ namespace ColorQuery.Properties
             return result;
         }
     }
-
 }

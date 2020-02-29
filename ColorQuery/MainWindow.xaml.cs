@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Res = ColorQuery.Properties.Resources;
 using IRect = System.Windows.Int32Rect;
-
+using System.Globalization;
 
 namespace ColorQuery
 {
@@ -209,11 +209,30 @@ namespace ColorQuery
 
         private void miAbout_Click(object sender, RoutedEventArgs e)
         {
-            var aboutbox = new AboutBox();
-            aboutbox.ShowDialog();
+            var about = new AboutBox();
+            about.ShowDialog();
         }
 
         private void miGoHome_Click(object _, RoutedEventArgs __) => ScrollHome();
+
+        private void histClear_Click(object sender, RoutedEventArgs e)
+        {
+            histBtn.IsChecked = false;
+            model.History.Clear();
+            e.Handled = true;
+        }
+
+        private void histList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var list = (ListView)sender;
+            if (list.HasItems)
+            {
+                var color = (Color)list.SelectedItem;
+                model.CurrentColor = color;
+            }
+
+            e.Handled = true;
+        }
 
     }
 }

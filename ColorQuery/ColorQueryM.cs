@@ -65,10 +65,6 @@ namespace ColorQuery
                     History.RemoveAt(10);
                 }
             }
-            else
-            {
-                History.Move(idx, 0);
-            }
         }
 
         string FormatColorInfo(bool ui, ColorFormat format)

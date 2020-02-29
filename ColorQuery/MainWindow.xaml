@@ -24,18 +24,21 @@
                 <Setter Property="FontSize" Value="13" />
             </Style>
 
-            <x:Array x:Key="designColorHist" Type="Color">
-                <Color>Red</Color>
-                <Color>Green</Color>
-                <Color>Blue</Color>
-                <Color>Cyan</Color>
-                <Color>Magenta</Color>
-                <Color>Yellow</Color>
-                <Color>Red</Color>
-                <Color>Green</Color>
-                <Color>Blue</Color>
-                <Color>Cyan</Color>
-            </x:Array>
+
+            <local:ColorQueryModel x:Key="mockModel">
+                <local:ColorQueryModel.History>
+                    <Color>Red</Color>
+                    <Color>Green</Color>
+                    <Color>Blue</Color>
+                    <Color>Cyan</Color>
+                    <Color>Magenta</Color>
+                    <Color>Yellow</Color>
+                    <Color>Red</Color>
+                    <Color>Green</Color>
+                    <Color>Blue</Color>
+                    <Color>Cyan</Color>
+                </local:ColorQueryModel.History>
+            </local:ColorQueryModel>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -55,14 +58,13 @@
         <KeyBinding Modifiers="Ctrl" Key="OemMinus" Command="DecreaseZoom" CommandParameter="out" />
     </Window.InputBindings>
 
-    <Grid>
+    <Grid d:DataContext="{StaticResource mockModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-
 
         <ToolBarTray Name="tooltray">
             <ToolBar>
@@ -80,13 +82,6 @@
                     <MenuItem Command="IncreaseZoom" Header="&#xE12E;" InputGestureText="Ctrl++" />
                     <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
                     <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="⌂" FontSize="15" Margin="0,-2,0,0" />
-                </Menu>
-            </ToolBar>
-            <ToolBar>
-                <Menu>
-                    <MenuItem Header="History" ItemsSource="{StaticResource designColorHist}">
-                        
-                    </MenuItem>
                 </Menu>
             </ToolBar>
         </ToolBarTray>
@@ -113,30 +108,40 @@
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0,0,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="60" FontFamily="Consolas, DejaVu Sans Mono" />
-                    <ListView Name="colorHist" ItemsSource="{StaticResource designColorHist}">
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel MaxWidth="150" MaxHeight="120"/>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <Rectangle Stroke="Black" Width="20" Height="20">
-                                    <Rectangle.Fill>
-                                        <SolidColorBrush Color="{Binding}" />
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                    <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" />
+                    <ToggleButton Name="histBtn" VerticalAlignment="Bottom" Margin="5,2" IsEnabled="{Binding HasItems, ElementName=histList}" Content="{p:Resx Key=History}" />
+                    <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True"
+                           IsOpen="{Binding IsChecked,ElementName=histBtn}" PlacementTarget="{Binding ElementName=histBtn}">
+                        <StackPanel Background="White" Margin="3">
+                            <!--<StackPanel.Effect>
+                                <DropShadowEffect />
+                            </StackPanel.Effect>-->
+                            <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
+                                <ListView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel MaxWidth="150" MaxHeight="120"/>
+                                    </ItemsPanelTemplate>
+                                </ListView.ItemsPanel>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Stroke="Black" Width="20" Height="20">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding}" />
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            <Button Click="histClear_Click">Clear</Button>
+                        </StackPanel>
+                    </Popup>
                 </StackPanel>
             </GroupBox>
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <GroupBox Header="{p:Resx Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" 
