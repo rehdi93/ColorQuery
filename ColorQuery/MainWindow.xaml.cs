@@ -51,7 +51,13 @@ namespace ColorQuery
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
             gbZoom.Header = NavigationCommands.Zoom.Text;
+
+            // workaround ContextMenu commands not working sometimes
+            var ctxm = (ContextMenu)Resources["ctxmColorCopy"];
+            CommandManager.AddCanExecuteHandler(ctxm, ContextMenu_CanExecute);
+            CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
         }
+
 
         BitmapSource CaptureScreen(IRect screenRect)
         {
@@ -162,6 +168,7 @@ namespace ColorQuery
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = model.CurrentColor != Colors.Transparent;
+            e.Handled = true;
         }
 
         private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
@@ -225,6 +232,24 @@ namespace ColorQuery
             }
 
             e.Handled = true;
+        }
+
+        private void ContextMenu_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Copy)
+            {
+                CopyCmd_CanExec(sender, e);
+                e.Handled = true;
+            }
+        }
+
+        private void ContextMenu_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (e.Command == ApplicationCommands.Copy)
+            {
+                CopyCmd_Exec(sender, e);
+                e.Handled = true;
+            }
         }
     }
 }
