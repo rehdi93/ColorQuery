@@ -19,12 +19,6 @@
                 </MenuItem>
             </ContextMenu>
 
-            <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
-                <Setter Property="FontFamily" Value="Segoe UI Symbol" />
-                <Setter Property="FontSize" Value="13" />
-            </Style>
-
-
             <local:ColorQueryModel x:Key="mockModel">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
@@ -67,22 +61,15 @@
         </Grid.RowDefinitions>
 
         <ToolBarTray Name="tooltray">
-            <ToolBar>
-                <Menu>
-                    <MenuItem Command="Refresh" Header="&#xE117;" />
-                    <MenuItem Command="Copy" Header="&#xE16f;" />
-                    <MenuItem Click="miAbout_Click" Background="{x:Null}" BorderBrush="{x:Null}" ToolTip="{p:Resx About}">
-                        <MenuItem.Header>
-                            <TextBlock FontSize="20" TextAlignment="Center" Margin="0,-5,0,0">ⓘ</TextBlock>
-                        </MenuItem.Header>
-                    </MenuItem>
-                </Menu>
-                <Separator />
-                <Menu>
-                    <MenuItem Command="IncreaseZoom" Header="&#xE12E;" InputGestureText="Ctrl++" />
-                    <MenuItem Command="DecreaseZoom" Header="&#xE1A4;" InputGestureText="Ctrl+-" />
-                    <MenuItem Name="miGoHome" Click="miGoHome_Click" Header="&#xE1E4;" FontSize="15" Margin="0,-2,0,0" />
-                </Menu>
+            <ToolBar FontFamily="Segoe UI Symbol" FontSize="15">
+                <Button Command="Refresh">&#xE117;</Button>
+                <Button Command="Copy">&#xE16f;</Button>
+                <ToggleButton Checked="histShow_Checked" ToolTip="{p:Resx Key=Recent Colors}">&#x1f553;</ToggleButton>
+                <Button Click="miAbout_Click" ToolTip="{p:Resx About}">&#xe10c;</Button>
+                <Separator/>
+                <Button Command="IncreaseZoom">&#xE12E;</Button>
+                <Button Command="DecreaseZoom">&#xE1A4;</Button>
+                <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
             </ToolBar>
         </ToolBarTray>
 

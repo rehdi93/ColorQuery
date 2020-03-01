@@ -12,9 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Globalization;
 using Res = ColorQuery.Properties.Resources;
 using IRect = System.Windows.Int32Rect;
-using System.Globalization;
+using ButtonBase = System.Windows.Controls.Primitives.ButtonBase;
+using ToggleButton = System.Windows.Controls.Primitives.ToggleButton;
 
 namespace ColorQuery
 {
@@ -31,6 +33,7 @@ namespace ColorQuery
             ScrollHome();
 
             // set toolbar item tooltips
+            /*
             var toolmenuitems = tooltray.ToolBars
                 .SelectMany(t => t.Items.OfType<Menu>())
                 .SelectMany(t => t.Items.OfType<MenuItem>())
@@ -46,9 +49,25 @@ namespace ColorQuery
                 {
                     mi.ToolTip += " (" + mi.InputGestureText + ")";
                 }
+            }*/
+
+            NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
+            NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
+
+            var items = tooltray.ToolBars[0].Items.OfType<ButtonBase>().Where(b => b.Command != null);
+            foreach (var btn in items)
+            {
+                var cmd = (RoutedUICommand)btn.Command;
+                btn.ToolTip = cmd.Text;
+
+                var gesture = cmd.InputGestures.OfType<KeyGesture>().FirstOrDefault();
+                if (gesture != null)
+                {
+                    btn.ToolTip += " (" + gesture.DisplayString + ")";
+                }
             }
 
-            miGoHome.ToolTip = NavigationCommands.BrowseHome.Text;
+            miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
         }
 
         BitmapSource CaptureScreen(IRect screenRect)
@@ -236,7 +255,7 @@ namespace ColorQuery
 
         private void histShow_Checked(object sender, RoutedEventArgs e)
         {
-            var ctrl = (System.Windows.Controls.Primitives.ToggleButton)sender;
+            var ctrl = (ToggleButton)sender;
             histPopup.PlacementTarget = ctrl;
             histPopup.IsOpen = ctrl.IsChecked.Value;
 
