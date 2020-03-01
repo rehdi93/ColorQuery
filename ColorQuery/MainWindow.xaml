@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ColorQuery"
-        xmlns:p="clr-namespace:ColorQuery.Properties"
+        xmlns:local="clr-namespace:ColorQuery" xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
         Title="Color Query" Width="800" Height="600" ResizeMode="CanResizeWithGrip">
 
@@ -47,10 +46,7 @@
         <CommandBinding Command="Close" Executed="CloseCmd_Exec" />
         <CommandBinding Command="Copy" Executed="CopyCmd_Exec" CanExecute="CopyCmd_CanExec" />
     </Window.CommandBindings>
-    <Window.InputBindings>
-        <KeyBinding Modifiers="Ctrl" Key="OemPlus" Command="IncreaseZoom" CommandParameter="in" />
-        <KeyBinding Modifiers="Ctrl" Key="OemMinus" Command="DecreaseZoom" CommandParameter="out" />
-    </Window.InputBindings>
+
 
     <Grid d:DataContext="{StaticResource mockModel}">
         <Grid.RowDefinitions>
@@ -61,10 +57,21 @@
         </Grid.RowDefinitions>
 
         <ToolBarTray Name="tooltray">
-            <ToolBar FontFamily="Segoe UI Symbol" FontSize="15">
+            <ToolBarTray.Resources>
+                <Style x:Key="btn" TargetType="ButtonBase">
+                    <Setter Property="Margin" Value="5,0"/>
+                    <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+                    <Setter Property="FontSize" Value="15"/>
+                </Style>
+                <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource btn}" TargetType="Button"/>
+            </ToolBarTray.Resources>
+            
+            <ToolBar>
                 <Button Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
-                <ToggleButton Checked="histShow_Checked" ToolTip="{p:Resx Key=Recent Colors}">&#x1f553;</ToggleButton>
+                <ToggleButton x:Name="histShow" ToolTip="{p:Resx Key='Recent colors'}" Style="{StaticResource btn}"
+                              IsEnabled="{Binding HasItems, ElementName=histList}"
+                              IsChecked="{Binding IsOpen, ElementName=histPopup,Mode=TwoWay}">&#x1f553;</ToggleButton>
                 <Button Click="miAbout_Click" ToolTip="{p:Resx About}">&#xe10c;</Button>
                 <Separator/>
                 <Button Command="IncreaseZoom">&#xE12E;</Button>
@@ -86,7 +93,7 @@
             </Image>
         </ScrollViewer>
 
-        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True">
+        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True" PlacementTarget="{Binding ElementName=histShow}">
             <StackPanel Background="White" Margin="3">
                 <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
                     <ListView.ItemsPanel>
@@ -104,7 +111,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Click="histClear_Click">Clear</Button>
+                <Button Click="histClear_Click" Content="{p:Resx Clear}"></Button>
             </StackPanel>
         </Popup>
 
@@ -117,7 +124,6 @@
                         </Rectangle.Fill>
                     </Rectangle>
                     <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" />
-                    <ToggleButton Name="histBtn" VerticalAlignment="Bottom" Margin="5,2" IsEnabled="{Binding HasItems, ElementName=histList}" Content="{p:Resx Key=History}" />
                 </StackPanel>
             </GroupBox>
 
@@ -139,7 +145,7 @@
                         <RadioButton Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Name="gbZoom" Header="{x:Static NavigationCommands.Zoom}" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
+                <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
                     <StackPanel>
                         <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
                         <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />

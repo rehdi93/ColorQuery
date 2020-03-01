@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -15,8 +16,7 @@ using System.Windows.Shapes;
 using System.Globalization;
 using Res = ColorQuery.Properties.Resources;
 using IRect = System.Windows.Int32Rect;
-using ButtonBase = System.Windows.Controls.Primitives.ButtonBase;
-using ToggleButton = System.Windows.Controls.Primitives.ToggleButton;
+
 
 namespace ColorQuery
 {
@@ -29,28 +29,10 @@ namespace ColorQuery
         {
             InitializeComponent();
 
-            preview.Source = CaptureScreen(GetScreenRect());
+            preview.Source = CaptureScreen();
             ScrollHome();
 
             // set toolbar item tooltips
-            /*
-            var toolmenuitems = tooltray.ToolBars
-                .SelectMany(t => t.Items.OfType<Menu>())
-                .SelectMany(t => t.Items.OfType<MenuItem>())
-                .Where(mi => mi.Command != null);
-            ;
-
-            foreach (MenuItem mi in toolmenuitems)
-            {
-                var cmd = (RoutedUICommand)mi.Command;
-                mi.ToolTip = cmd.Text;
-
-                if (!string.IsNullOrEmpty(mi.InputGestureText))
-                {
-                    mi.ToolTip += " (" + mi.InputGestureText + ")";
-                }
-            }*/
-
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
@@ -68,6 +50,7 @@ namespace ColorQuery
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
+            gbZoom.Header = NavigationCommands.Zoom.Text;
         }
 
         BitmapSource CaptureScreen(IRect screenRect)
@@ -93,21 +76,16 @@ namespace ColorQuery
 
             return screen;
         }
+        BitmapSource CaptureScreen() => CaptureScreen(VisualTreeHelper.GetDpi(this));
+        BitmapSource CaptureScreen(DpiScale dpi) => CaptureScreen(GetScreenRect(dpi));
 
         // https://stackoverflow.com/a/14508110
         Color GetPixel(BitmapSource image, int x, int y)
         {
-            try
-            {
-                var crop = new CroppedBitmap(image, new IRect(x, y, 1, 1));
-                var pixelbuff = new byte[4]; // [0] blue, green, red, alpha [3]
-                crop.CopyPixels(pixelbuff, 4, 0);
-                return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
-            }
-            catch (Exception)
-            {
-                return Colors.Transparent;
-            }
+            var crop = new CroppedBitmap(image, new IRect(x, y, 1, 1));
+            var pixelbuff = new byte[4]; // { blue, green, red, alpha }
+            crop.CopyPixels(pixelbuff, 4, 0);
+            return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
         }
 
         IRect GetScreenRect(DpiScale dpi)
@@ -132,14 +110,14 @@ namespace ColorQuery
 
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            var rect = GetScreenRect();
+            var dpi = VisualTreeHelper.GetDpi(this);
 
             // hide window by moving it offscreen, make sure to
             // get the dpi before moving
             var bounds = RestoreBounds;
             Left = Top = int.MaxValue;
             
-            preview.Source = CaptureScreen(rect);
+            preview.Source = CaptureScreen(dpi);
 
             Left = bounds.Left;
             Top = bounds.Top;
@@ -151,21 +129,23 @@ namespace ColorQuery
             var bm = (BitmapSource)image.Source;
 
             var pos = e.GetPosition(image);
-            model.CurrentColor = GetPixel(bm, (int)pos.X, (int)pos.Y);
-            model.Status = string.Format(Res.mousepos_fmt2, (int)pos.X, (int)pos.Y);
+            (int X, int Y) = ((int)pos.X, (int)pos.Y);
+            model.CurrentColor = GetPixel(bm, X, Y);
+            model.Status = string.Format(Res.mousepos_fmt2, X, Y);
         }
 
         int lastMouseMove = 0;
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.RoutedEvent.Name == MouseLeaveEvent.Name)
+            if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Status = string.Format(Res.mousepos_fmt, "OB");
+                model.Status = string.Format(Res.mousepos_fmt, "[OB]");
             }
-            else if (e.RoutedEvent.Name == MouseMoveEvent.Name && e.Timestamp - lastMouseMove >= 100)
+            else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseMove >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
-                model.Status = string.Format(Res.mousepos_fmt2, (int)pos.X, (int)pos.Y);
+                (int X, int Y) = ((int)pos.X, (int)pos.Y);
+                model.Status = string.Format(Res.mousepos_fmt2, X, Y);
                 lastMouseMove = e.Timestamp;
             }
         }
@@ -186,30 +166,24 @@ namespace ColorQuery
 
         private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var zoomcmd = (RoutedCommand)e.Command;
-
-            if (zoomcmd.Name == NavigationCommands.IncreaseZoom.Name)
+            var zoomcmd = e.Command;
+            if (zoomcmd == NavigationCommands.IncreaseZoom)
             {
                 model.Zoom += zoomSlider.LargeChange;
             }
-            else if (zoomcmd.Name == NavigationCommands.DecreaseZoom.Name)
+            else if (zoomcmd == NavigationCommands.DecreaseZoom)
             {
                 model.Zoom -= zoomSlider.LargeChange;
-            }
-            else if (zoomcmd.Name == NavigationCommands.Zoom.Name)
-            {
-                // ...
             }
         }
         private void ZoomCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {
-            var zoomcmd = (RoutedCommand)e.Command;
-
-            if (zoomcmd.Name == NavigationCommands.IncreaseZoom.Name)
+            var zoomcmd = e.Command;
+            if (zoomcmd == NavigationCommands.IncreaseZoom)
             {
                 e.CanExecute = model.Zoom < zoomSlider?.Maximum;
             }
-            else if (zoomcmd.Name == NavigationCommands.DecreaseZoom.Name)
+            else if (zoomcmd == NavigationCommands.DecreaseZoom)
             {
                 e.CanExecute = model.Zoom > zoomSlider?.Minimum;
             }
@@ -236,7 +210,7 @@ namespace ColorQuery
 
         private void histClear_Click(object sender, RoutedEventArgs e)
         {
-            histBtn.IsChecked = false;
+            histPopup.IsOpen = false;
             model.History.Clear();
             e.Handled = true;
         }
@@ -251,14 +225,6 @@ namespace ColorQuery
             }
 
             e.Handled = true;
-        }
-
-        private void histShow_Checked(object sender, RoutedEventArgs e)
-        {
-            var ctrl = (ToggleButton)sender;
-            histPopup.PlacementTarget = ctrl;
-            histPopup.IsOpen = ctrl.IsChecked.Value;
-
         }
     }
 }

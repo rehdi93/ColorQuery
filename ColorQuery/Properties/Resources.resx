@@ -139,7 +139,7 @@
     <value>Format</value>
   </data>
   <data name="mousepos_fmt" xml:space="preserve">
-    <value>Mouse pos: [{0}]</value>
+    <value>Mouse pos: {0}</value>
     <comment>0=coords</comment>
   </data>
   <data name="mousepos_fmt2" xml:space="preserve">
