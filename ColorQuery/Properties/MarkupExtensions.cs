@@ -1,29 +1,31 @@
 ﻿using System;
-
+using System.Windows.Markup;
 
 namespace ColorQuery.Properties
 {
-    public class ResxExtension : System.Windows.Markup.MarkupExtension
+    public class ResxExtension : MarkupExtension
     {
         public string Key { get; set; }
 
-        public ResxExtension(object key)
+        public ResxExtension(string key)
         {
-            Key = key as string;
+            Key = key;
         }
+        public ResxExtension() { }
 
         public override object ProvideValue(IServiceProvider _)
         {
-            if (Key == null) return null;
             string result;
 
             try
             {
                 result = Resources.ResourceManager.GetString(Key);
+                if (string.IsNullOrEmpty(result))
+                    result = Key;
             }
             catch (ArgumentNullException)
             {
-                result = "NULL";
+                result = "NULL_ID";
             }
             catch (Exception e)
             {
@@ -34,5 +36,4 @@ namespace ColorQuery.Properties
             return result;
         }
     }
-
 }

@@ -20,7 +20,7 @@ namespace ColorQuery
             txtProductName.Text = this.AssemblyProduct;
             txtVersion.Text = Properties.Resources.Version + ' ' + this.AssemblyVersion;
             txtCopyright.Text = this.AssemblyCopyright;
-            weblink.RequestNavigate += (s,e) => {
+            weblink.RequestNavigate += (_, e) => {
                 System.Diagnostics.Process.Start(e.Uri.ToString());
                 e.Handled = true;
             };

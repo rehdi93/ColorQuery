@@ -54,20 +54,17 @@ namespace ColorQuery
         public string GetText(ColorFormat fmt) => FormatColorInfo(false, fmt);
 
 
-        bool AddRecent(Color color)
+        void AddRecent(Color color)
         {
-            if (History.Count == 10)
+            var idx = History.IndexOf(color);
+            if (idx == -1)
             {
-                History.RemoveAt(0);
+                History.Insert(0, color);
+                if (History.Count > 10)
+                {
+                    History.RemoveAt(10);
+                }
             }
-
-            if (!History.Contains(color))
-            {
-                History.Add(color);
-                return true;
-            }
-
-            return false;
         }
 
         string FormatColorInfo(bool ui, ColorFormat format)

@@ -120,6 +120,9 @@
   <data name="About" xml:space="preserve">
     <value>Sobre</value>
   </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Limpar</value>
+  </data>
   <data name="Color" xml:space="preserve">
     <value>Cor</value>
     <comment>color</comment>
@@ -139,7 +142,7 @@
     <value>Formato</value>
   </data>
   <data name="mousepos_fmt" xml:space="preserve">
-    <value>Pos. mouse: [{0}]</value>
+    <value>Pos. mouse: {0}</value>
     <comment>0=coords</comment>
   </data>
   <data name="mousepos_fmt2" xml:space="preserve">
@@ -148,6 +151,9 @@
   </data>
   <data name="Options" xml:space="preserve">
     <value>Opções</value>
+  </data>
+  <data name="Recent colors" xml:space="preserve">
+    <value>Cores recentes</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Versão</value>
