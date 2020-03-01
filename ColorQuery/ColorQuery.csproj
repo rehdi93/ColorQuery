@@ -10,7 +10,7 @@
     <Product>Color Query</Product>
     <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
     <LangVersion>8.0</LangVersion>
-    <Version>1.2.1</Version>
+    <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup Label="nuget">
