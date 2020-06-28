@@ -26,7 +26,7 @@
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel">
+            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -40,6 +40,7 @@
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
                 <local:ColorQueryModel.Footer>Status...</local:ColorQueryModel.Footer>
+                <local:ColorQueryModel.Zoom>1.69</local:ColorQueryModel.Zoom>
             </local:ColorQueryModel>
         </ResourceDictionary>
     </Window.Resources>
@@ -52,7 +53,6 @@
         <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
         <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
         <CommandBinding Command="DecreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
-        <CommandBinding Command="Close" Executed="CloseCmd_Exec" />
         <CommandBinding Command="Copy" Executed="CopyCmd_Exec" CanExecute="CopyCmd_CanExec" />
     </Window.CommandBindings>
 
@@ -61,7 +61,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
@@ -74,14 +74,20 @@
                 </Style>
                 <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource btn}" TargetType="Button"/>
             </ToolBarTray.Resources>
-            
+
             <ToolBar>
                 <Button Name="btnRefresh" Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
                 <ToggleButton x:Name="histShow" ToolTip="{p:Resx Key='Recent colors'}" Style="{StaticResource btn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}"
                               IsChecked="{Binding IsOpen, ElementName=histPopup,Mode=TwoWay}">&#x1f553;</ToggleButton>
-                <Button Click="miAbout_Click" ToolTip="{p:Resx About}">&#xe10c;</Button>
+                <Button Click="miAbout_Click" ToolTip="{p:Resx About}" Width="22" Height="23">
+                    <Viewbox>
+                        <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
+                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
+                        </Border>
+                    </Viewbox>
+                </Button>
                 <Separator/>
                 <Button Command="IncreaseZoom">&#xE12E;</Button>
                 <Button Command="DecreaseZoom">&#xE1A4;</Button>
@@ -124,15 +130,15 @@
             </StackPanel>
         </Popup>
 
-        <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" >
+        <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <GroupBox Header="{p:Resx Color}" Padding="3" MinWidth="250">
                 <StackPanel Orientation="Horizontal">
-                    <Rectangle Name="previewColor" Stroke="Black" Height="85" Width="85" ContextMenu="{StaticResource ctxmColorCopy}" VerticalAlignment="Top">
+                    <Rectangle Name="previewColor" Stroke="Black" Height="80" Width="80" ContextMenu="{StaticResource ctxmColorCopy}">
                         <Rectangle.Fill>
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" />
+                    <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" />
                 </StackPanel>
             </GroupBox>
 
@@ -154,10 +160,10 @@
                         <RadioButton Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom">
+                <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom" Header="zoom">
                     <StackPanel>
                         <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
-                        <TextBlock Text="{Binding Value, ElementName=zoomSlider, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
+                        <TextBlock Text="{Binding Zoom, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
                     </StackPanel>
                 </GroupBox>
             </Grid>

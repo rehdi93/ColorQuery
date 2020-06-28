@@ -197,8 +197,6 @@ namespace ColorQuery
             }
         }
 
-        private void CloseCmd_Exec(object _, ExecutedRoutedEventArgs __) => Close();
-
         private void onColorFmtChanged(object sender, RoutedEventArgs e)
         {
             var element = (FrameworkElement)e.Source;
