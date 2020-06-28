@@ -10,10 +10,10 @@ namespace ColorQuery
 
         public Cmyk(float c, float m, float y, float k)
         {
-            this.c = c;
-            this.m = m;
-            this.y = y;
-            this.k = k;
+            this.c = Clamp(c);
+            this.m = Clamp(m);
+            this.y = Clamp(y);
+            this.k = Clamp(k);
         }
 
         public Cmyk(byte red, byte green, byte blue)
@@ -93,22 +93,18 @@ namespace ColorQuery
         }
 
         public static bool operator ==(Cmyk left, Cmyk right) => left.Equals(right);
-        public static bool operator !=(Cmyk left, Cmyk right) => !left.Equals(right);
+        public static bool operator !=(Cmyk left, Cmyk right) => !(left == right);
 
         public static implicit operator Color(Cmyk cmyk)
         {
-            (byte r, byte g, byte b) = cmyk.to_rgb();
+            (byte r, byte g, byte b) = (
+                (byte)(255 * (1 - cmyk.c) * (1 - cmyk.k)),
+                (byte)(255 * (1 - cmyk.m) * (1 - cmyk.k)),
+                (byte)(255 * (1 - cmyk.y) * (1 - cmyk.k))
+            );
             return Color.FromRgb(r, g, b);
         }
 
-        (byte,byte,byte) to_rgb()
-        {
-            return (
-                (byte)(255 * (1 - c) * (1 - k)),
-                (byte)(255 * (1 - m) * (1 - k)),
-                (byte)(255 * (1 - y) * (1 - k))
-            );
-        }
         static float Clamp(float nValue) => Math.Min(MaxValue, Math.Max(MinValue, nValue));
 
         private void Deconstruct(out float c, out float m, out float y, out float k)

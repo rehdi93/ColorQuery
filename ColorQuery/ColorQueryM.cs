@@ -10,7 +10,7 @@ using MvvmHelpers;
 namespace ColorQuery
 {
 
-    class ColorQueryModel : ObservableObject
+    class ColorQueryModel : BaseViewModel
     {
         public Color CurrentColor
         {
@@ -35,12 +35,6 @@ namespace ColorQuery
             }
         }
         public ObservableCollection<Color> History { get; } = new ObservableCollection<Color>();
-
-        public string Status
-        {
-            get { return status; }
-            set { SetProperty(ref status, value); }
-        }
 
         public double Zoom
         {
@@ -113,7 +107,6 @@ namespace ColorQuery
             return infoText;
         }
 
-        string status;
         Color color;
         ColorFormat format;
         double zoom = 1;

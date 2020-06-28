@@ -15,7 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Globalization;
 using Res = ColorQuery.Properties.Resources;
-using IRect = System.Windows.Int32Rect;
+using RectI = System.Windows.Int32Rect;
+using Gdi = System.Drawing;
 
 
 namespace ColorQuery
@@ -36,7 +37,7 @@ namespace ColorQuery
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
-            var items = tooltray.ToolBars[0].Items.OfType<ButtonBase>().Where(b => b.Command != null);
+            var items = tooltray.ToolBars[0].Items.OfType<ButtonBase>().Where(b => b.Command is RoutedUICommand);
             foreach (var btn in items)
             {
                 var cmd = (RoutedUICommand)btn.Command;
@@ -58,23 +59,24 @@ namespace ColorQuery
             CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
         }
 
-        int lastMouseMove = 0;
+        int lastMouseTimestamp = 0;
 
 
-        BitmapSource CaptureScreen(IRect screenRect)
+        BitmapSource CaptureScreen(RectI screenRect)
         {
-            using var bm = new System.Drawing.Bitmap(screenRect.Width, screenRect.Height);
+            using var bm = new Gdi.Bitmap(screenRect.Width, screenRect.Height);
             bm.SetResolution(96f, 96f);
 
-            using var g = System.Drawing.Graphics.FromImage(bm);
+            using var g = Gdi.Graphics.FromImage(bm);
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            g.SmoothingMode = Gdi.Drawing2D.SmoothingMode.HighQuality;
+            g.InterpolationMode = Gdi.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = Gdi.Drawing2D.PixelOffsetMode.HighQuality;
+
             g.CopyFromScreen(screenRect.X, screenRect.Y, 0, 0, bm.Size);
 
             using var mem = new System.IO.MemoryStream();
-            bm.Save(mem, System.Drawing.Imaging.ImageFormat.Png);
+            bm.Save(mem, Gdi.Imaging.ImageFormat.Png);
 
             var screen = new BitmapImage();
             screen.BeginInit();
@@ -90,22 +92,22 @@ namespace ColorQuery
         // https://stackoverflow.com/a/14508110
         Color GetPixel(BitmapSource image, int x, int y)
         {
-            var crop = new CroppedBitmap(image, new IRect(x, y, 1, 1));
+            var crop = new CroppedBitmap(image, new RectI(x, y, 1, 1));
             var pixelbuff = new byte[4]; // { blue, green, red, alpha }
             crop.CopyPixels(pixelbuff, 4, 0);
             return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
         }
 
-        IRect GetScreenRect(DpiScale dpi)
+        RectI GetScreenRect(DpiScale dpi)
         {
-            return new IRect(
+            return new RectI(
                 (int)(SystemParameters.VirtualScreenLeft * dpi.DpiScaleX),
                 (int)(SystemParameters.VirtualScreenTop * dpi.DpiScaleY),
                 (int)(SystemParameters.VirtualScreenWidth * dpi.DpiScaleX),
                 (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY)
             );
         }
-        IRect GetScreenRect() => GetScreenRect(VisualTreeHelper.GetDpi(this));
+        RectI GetScreenRect() => GetScreenRect(VisualTreeHelper.GetDpi(this));
 
         private void ScrollHome()
         {
@@ -137,21 +139,21 @@ namespace ColorQuery
             var pos = e.GetPosition(image);
             (int X, int Y) = ((int)pos.X, (int)pos.Y);
             model.CurrentColor = GetPixel((BitmapSource)image.Source, X, Y);
-            model.Status = string.Format(Res.mousepos_fmt2, X, Y);
+            model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
         }
 
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Status = string.Format(Res.mousepos_fmt, "[OB]");
+                model.Footer = string.Format(Res.mousepos_fmt, "[OB]");
             }
-            else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseMove >= 100)
+            else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
                 (int X, int Y) = ((int)pos.X, (int)pos.Y);
-                model.Status = string.Format(Res.mousepos_fmt2, X, Y);
-                lastMouseMove = e.Timestamp;
+                model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
+                lastMouseTimestamp = e.Timestamp;
             }
         }
 
@@ -162,7 +164,7 @@ namespace ColorQuery
                 format = fmt;
 
             Clipboard.SetText(model.GetText(format));
-            model.Status = Res.ColorCopied;
+            model.Footer = Res.ColorCopied;
         }
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {

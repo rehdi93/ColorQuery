@@ -39,7 +39,7 @@
                     <Color>Blue</Color>
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
-                <local:ColorQueryModel.Status>Status...</local:ColorQueryModel.Status>
+                <local:ColorQueryModel.Footer>Status...</local:ColorQueryModel.Footer>
             </local:ColorQueryModel>
         </ResourceDictionary>
     </Window.Resources>
@@ -162,14 +162,14 @@
                 </GroupBox>
             </Grid>
 
-            <Button Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}" 
-                    Command="Refresh" VerticalAlignment="Bottom" MinWidth="80" Margin="5,0,0,0"/>
+            <Button Command="Refresh" Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}"
+                    VerticalAlignment="Bottom" MinWidth="80" Margin="5,0,0,0"/>
         </StackPanel>
 
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock Name="statusTxt" Text="{Binding Status}" FontSize="11"/>
+                <TextBlock Name="statusTxt" Text="{Binding Footer}" FontSize="11"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
