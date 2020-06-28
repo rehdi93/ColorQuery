@@ -10,11 +10,19 @@
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{p:Resx CopyColor}" Command="Copy" />
+                <MenuItem Header="{p:Resx CopyColor}" Command="Copy">
+                    <MenuItem.Icon>
+                        <Rectangle>
+                            <Rectangle.Fill>
+                                <SolidColorBrush Color="{Binding CurrentColor}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="{p:Resx CopyColorAs}">
-                    <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}" InputGestureText=" "/>
+                    <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
                     <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
-                    <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}" InputGestureText=" "/>
+                    <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
                 </MenuItem>
             </ContextMenu>
 
@@ -31,6 +39,7 @@
                     <Color>Blue</Color>
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
+                <local:ColorQueryModel.Status>Status...</local:ColorQueryModel.Status>
             </local:ColorQueryModel>
         </ResourceDictionary>
     </Window.Resources>
@@ -67,7 +76,7 @@
             </ToolBarTray.Resources>
             
             <ToolBar>
-                <Button Command="Refresh">&#xE117;</Button>
+                <Button Name="btnRefresh" Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
                 <ToggleButton x:Name="histShow" ToolTip="{p:Resx Key='Recent colors'}" Style="{StaticResource btn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}"
@@ -160,7 +169,7 @@
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock Name="statusTxt" Text="{Binding Status,FallbackValue=Status...}" FontSize="11"/>
+                <TextBlock Name="statusTxt" Text="{Binding Status}" FontSize="11"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

@@ -58,6 +58,8 @@ namespace ColorQuery
             CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
         }
 
+        int lastMouseMove = 0;
+
 
         BitmapSource CaptureScreen(IRect screenRect)
         {
@@ -118,8 +120,7 @@ namespace ColorQuery
         {
             var dpi = VisualTreeHelper.GetDpi(this);
 
-            // hide window by moving it offscreen, make sure to
-            // get the dpi before moving
+            // hide window by moving it offscreen
             var bounds = RestoreBounds;
             Left = Top = int.MaxValue;
             
@@ -132,15 +133,13 @@ namespace ColorQuery
         private void preview_MouseBtnClick(object sender, MouseButtonEventArgs e)
         {
             var image = (Image)sender;
-            var bm = (BitmapSource)image.Source;
 
             var pos = e.GetPosition(image);
             (int X, int Y) = ((int)pos.X, (int)pos.Y);
-            model.CurrentColor = GetPixel(bm, X, Y);
+            model.CurrentColor = GetPixel((BitmapSource)image.Source, X, Y);
             model.Status = string.Format(Res.mousepos_fmt2, X, Y);
         }
 
-        int lastMouseMove = 0;
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.RoutedEvent == MouseLeaveEvent)
@@ -236,7 +235,7 @@ namespace ColorQuery
 
         private void ContextMenu_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Command == ApplicationCommands.Copy)
+            if (sender == Resources["ctxmColorCopy"] && e.Command == ApplicationCommands.Copy)
             {
                 CopyCmd_CanExec(sender, e);
                 e.Handled = true;
