@@ -43,7 +43,7 @@ namespace ColorQuery
         }
 
 
-        public string UiText => FormatColorInfo(true, this.format);
+        public string UiText => FormatColorInfo(false, this.format);
 
         public string GetText(ColorFormat fmt) => FormatColorInfo(false, fmt);
 

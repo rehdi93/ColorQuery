@@ -26,7 +26,7 @@
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6">
+            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6" CurrentFormat="CMYK">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -138,7 +138,15 @@
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" />
+                    <!--<TextBlock Name="previewText" Margin="5,0" Text="{Binding UiText,FallbackValue=None}" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" />-->
+                    <FlowDocumentScrollViewer Width="225" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <FlowDocument FontFamily="Consolas, DejaVu Sans Mono" FontSize="12">
+                            <Paragraph>
+                                <Bold><Run Text="{Binding CurrentFormat}" />: </Bold>
+                                <Run Text="{Binding UiText,Mode=OneWay}"/>
+                            </Paragraph>
+                        </FlowDocument>
+                    </FlowDocumentScrollViewer>
                 </StackPanel>
             </GroupBox>
 
@@ -148,16 +156,16 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <GroupBox Header="{p:Resx Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" 
-                                RadioButton.Checked="onColorFmtChanged">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
                         <StackPanel.Resources>
                             <Style TargetType="RadioButton">
                                 <Setter Property="Margin" Value="3,0"/>
+                                <EventSetter Event="Checked" Handler="onColorFmtChanged" />
                             </Style>
                         </StackPanel.Resources>
                         <RadioButton IsChecked="True" Content="RGB" Tag="{x:Static local:ColorFormat.RGB}"/>
+                        <RadioButton Content="HEX" Tag="{x:Static local:ColorFormat.HEX}"/>
                         <RadioButton Content="CMYK" Tag="{x:Static local:ColorFormat.CMYK}"/>
-                        <RadioButton Content="Hex" Tag="{x:Static local:ColorFormat.HEX}"/>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom" Header="zoom">
