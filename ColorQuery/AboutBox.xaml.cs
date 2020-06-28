@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -21,7 +22,10 @@ namespace ColorQuery
             txtVersion.Text = Properties.Resources.Version + ' ' + this.AssemblyVersion;
             txtCopyright.Text = this.AssemblyCopyright;
             weblink.RequestNavigate += (_, e) => {
-                System.Diagnostics.Process.Start(e.Uri.ToString());
+                var psi = new ProcessStartInfo(e.Uri.ToString()) {
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
                 e.Handled = true;
             };
         }
