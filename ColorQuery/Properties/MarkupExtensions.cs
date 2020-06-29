@@ -36,4 +36,27 @@ namespace ColorQuery.Properties
             return result;
         }
     }
+
+    public class I18nExtension : MarkupExtension
+    {
+        public string Text { get; set; }
+
+        public override object ProvideValue(IServiceProvider _)
+        {
+            try
+            {
+                var result = Resources.ResourceManager.GetString(Text);
+                return string.IsNullOrEmpty(result) ? Text : result;
+            }
+            catch (ArgumentNullException)
+            {
+                return null;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.Print("Resx error: '{0}'", e.Message);
+                return Text;
+            }
+        }
+    }
 }
