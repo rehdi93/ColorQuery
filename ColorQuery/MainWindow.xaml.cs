@@ -29,13 +29,13 @@ namespace ColorQuery
         public MainWindow()
         {
             InitializeComponent();
+            NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
+            NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
             preview.Source = CaptureScreen();
             ScrollHome();
 
             // set toolbar item tooltips
-            NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
-            NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
             var items = tooltray.ToolBars[0].Items.OfType<ButtonBase>().Where(b => b.Command is RoutedUICommand);
             foreach (var btn in items)
@@ -43,24 +43,25 @@ namespace ColorQuery
                 var cmd = (RoutedUICommand)btn.Command;
                 btn.ToolTip = cmd.Text;
 
-                var gesture = cmd.InputGestures.OfType<KeyGesture>().FirstOrDefault();
-                if (gesture != null)
+                var g = cmd.InputGestures.OfType<KeyGesture>().FirstOrDefault();
+                if (g != null)
                 {
-                    btn.ToolTip += " (" + gesture.DisplayString + ")";
+                    btn.ToolTip += " (" + g.DisplayString + ")";
                 }
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
-            //gbZoom.Header = NavigationCommands.Zoom.Text;
+            gbZoom.Header = NavigationCommands.Zoom.Text;
 
             // workaround ContextMenu commands not working sometimes
             var ctxm = (ContextMenu)Resources["ctxmColorCopy"];
             CommandManager.AddCanExecuteHandler(ctxm, ContextMenu_CanExecute);
             CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
+
+            preview.MouseWheel += preview_MouseWheel;
         }
 
         int lastMouseTimestamp = 0;
-
 
         BitmapSource CaptureScreen(RectI screenRect)
         {
@@ -136,12 +137,15 @@ namespace ColorQuery
         {
             var image = (Image)sender;
 
-            var pos = e.GetPosition(image);
-            (int X, int Y) = ((int)pos.X, (int)pos.Y);
-            model.CurrentColor = GetPixel((BitmapSource)image.Source, X, Y);
-            model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
-        }
+            if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
+            {
+                var pos = e.GetPosition(image);
+                (int X, int Y) = ((int)pos.X, (int)pos.Y);
+                model.CurrentColor = GetPixel((BitmapSource)image.Source, X, Y);
+                model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
+            }
 
+        }
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.RoutedEvent == MouseLeaveEvent)
@@ -154,6 +158,20 @@ namespace ColorQuery
                 (int X, int Y) = ((int)pos.X, (int)pos.Y);
                 model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
                 lastMouseTimestamp = e.Timestamp;
+            }
+        }
+        private void preview_MouseWheel(object _, MouseWheelEventArgs e)
+        {
+            var modkeys = Keyboard.Modifiers;
+            if (modkeys.HasFlag(ModifierKeys.Control))
+            {
+                double zamount = zoomSlider.SmallChange;
+                var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;
+
+                if (command.CanExecute(null, preview))
+                    command.Execute(zamount, preview);
+
+                e.Handled = true;
             }
         }
 
@@ -174,30 +192,30 @@ namespace ColorQuery
 
         private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var zoomcmd = e.Command;
-            if (zoomcmd == NavigationCommands.IncreaseZoom)
+            var amount = e.Parameter is double param ? param : zoomSlider.LargeChange;
+
+            if (e.Command == NavigationCommands.IncreaseZoom)
             {
-                model.Zoom += zoomSlider.LargeChange;
+                model.Zoom += amount;
             }
-            else if (zoomcmd == NavigationCommands.DecreaseZoom)
+            else if (e.Command == NavigationCommands.DecreaseZoom)
             {
-                model.Zoom -= zoomSlider.LargeChange;
+                model.Zoom -= amount;
             }
         }
         private void ZoomCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {
-            var zoomcmd = e.Command;
-            if (zoomcmd == NavigationCommands.IncreaseZoom)
+            if (e.Command == NavigationCommands.IncreaseZoom)
             {
                 e.CanExecute = model.Zoom < zoomSlider?.Maximum;
             }
-            else if (zoomcmd == NavigationCommands.DecreaseZoom)
+            else if (e.Command == NavigationCommands.DecreaseZoom)
             {
                 e.CanExecute = model.Zoom > zoomSlider?.Minimum;
             }
         }
 
-        private void onColorFmtChanged(object sender, RoutedEventArgs e)
+        private void onColorFmtChanged(object _, RoutedEventArgs e)
         {
             var element = (FrameworkElement)e.Source;
             if (element.Tag is ColorFormat fmt)
@@ -206,7 +224,7 @@ namespace ColorQuery
             }
         }
 
-        private void miAbout_Click(object sender, RoutedEventArgs e)
+        private void miAbout_Click(object _, RoutedEventArgs __)
         {
             var about = new AboutBox();
             about.ShowDialog();
@@ -244,11 +262,12 @@ namespace ColorQuery
 
         private void ContextMenu_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Command == ApplicationCommands.Copy)
+            if (sender == Resources["ctxmColorCopy"] && e.Command == ApplicationCommands.Copy)
             {
                 CopyCmd_Exec(sender, e);
                 e.Handled = true;
             }
         }
     }
+
 }

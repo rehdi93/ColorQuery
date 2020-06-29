@@ -101,8 +101,7 @@
 
         <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
             <Image x:Name="preview" Stretch="UniformToFill" Cursor="Cross"
-                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove"
-                   MouseRightButtonUp="preview_MouseBtnClick" MouseLeftButtonDown="preview_MouseBtnClick"
+                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick"
                    ContextMenu="{StaticResource ctxmColorCopy}">
                 <Image.RenderTransform>
                     <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" 
