@@ -10,7 +10,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{p:Resx CopyColor}" Command="Copy">
+                <MenuItem Header="{p:I18n CopyColor}" Command="Copy">
                     <MenuItem.Icon>
                         <Rectangle>
                             <Rectangle.Fill>
@@ -19,7 +19,7 @@
                         </Rectangle>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{p:Resx CopyColorAs}">
+                <MenuItem Header="{p:I18n CopyColorAs}">
                     <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
                     <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
                     <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
@@ -82,10 +82,10 @@
             <ToolBar>
                 <Button Name="btnRefresh" Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
-                <ToggleButton x:Name="histShow" ToolTip="{p:Resx Key='Recent colors'}" Style="{StaticResource btn}"
+                <ToggleButton x:Name="histShow" ToolTip="{p:I18n Text='Recent colors'}" Style="{StaticResource btn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}"
                               IsChecked="{Binding IsOpen, ElementName=histPopup,Mode=TwoWay}">&#x1f553;</ToggleButton>
-                <Button Click="miAbout_Click" ToolTip="{p:Resx About}" Width="22" Height="23">
+                <Button Click="miAbout_Click" ToolTip="{p:I18n About}" Width="22" Height="23">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
                             <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
@@ -129,7 +129,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Click="histClear_Click" Content="{p:Resx Clear}"></Button>
+                <Button Click="histClear_Click" Content="{p:I18n Clear}"></Button>
             </StackPanel>
         </Popup>
 
@@ -144,7 +144,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <GroupBox Header="{p:Resx Color}" Padding="5" Grid.RowSpan="2">
+            <GroupBox Header="{p:I18n Color}" Padding="5" Grid.RowSpan="2">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Name="previewColor" Stroke="Black" Height="80" Width="80" ContextMenu="{StaticResource ctxmColorCopy}">
                         <Rectangle.Fill>
@@ -157,7 +157,7 @@
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="{p:Resx Format}" Padding="5" Grid.Column="1" HorizontalAlignment="Left" MinWidth="100">
+            <GroupBox Header="{p:I18n Format}" Padding="5" Grid.Column="1" HorizontalAlignment="Left" MinWidth="100">
                 <ComboBox Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding CurrentFormat}" ToolTip="{p:I18n Text=Format}" HorizontalAlignment="Stretch" />
             </GroupBox>
 

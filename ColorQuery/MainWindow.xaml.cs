@@ -36,8 +36,7 @@ namespace ColorQuery
             ScrollHome();
 
             // set toolbar item tooltips
-
-            var items = tooltray.ToolBars[0].Items.OfType<ButtonBase>().Where(b => b.Command is RoutedUICommand);
+            var items = tooltray.ToolBars.SelectMany(tb => tb.Items.OfType<ButtonBase>()).Where(b => b.Command is RoutedUICommand);
             foreach (var btn in items)
             {
                 var cmd = (RoutedUICommand)btn.Command;

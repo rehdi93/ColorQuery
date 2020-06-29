@@ -7,33 +7,23 @@ namespace ColorQuery.Properties
     {
         public string Key { get; set; }
 
-        public ResxExtension(string key)
+        public ResxExtension(string key=null)
         {
             Key = key;
         }
-        public ResxExtension() { }
+        public ResxExtension() {}
 
         public override object ProvideValue(IServiceProvider _)
         {
-            string result;
-
             try
             {
-                result = Resources.ResourceManager.GetString(Key);
-                if (string.IsNullOrEmpty(result))
-                    result = Key;
-            }
-            catch (ArgumentNullException)
-            {
-                result = "NULL_ID";
+                return Resources.ResourceManager.GetObject(Key);
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.Print("Resx error: '{0}'", e.Message);
-                result = Key;
+                return null;
             }
-
-            return result;
         }
     }
 
@@ -41,20 +31,21 @@ namespace ColorQuery.Properties
     {
         public string Text { get; set; }
 
+        public I18nExtension(string txt)
+        {
+            Text = txt;
+        }
+        public I18nExtension() {}
+
         public override object ProvideValue(IServiceProvider _)
         {
             try
             {
-                var result = Resources.ResourceManager.GetString(Text);
-                return string.IsNullOrEmpty(result) ? Text : result;
-            }
-            catch (ArgumentNullException)
-            {
-                return null;
+                return I18n.translate(Text);
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.Print("Resx error: '{0}'", e.Message);
+                System.Diagnostics.Debug.Print("I18n error: '{0}'", e.Message);
                 return Text;
             }
         }
