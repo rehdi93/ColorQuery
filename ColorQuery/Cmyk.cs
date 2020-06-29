@@ -66,7 +66,7 @@ namespace ColorQuery
 
         public override string ToString()
         {
-            return $"[C={C:F3}, M={M:F3}, Y={Y:F3}, K={K:F3}]";
+            return $"{C:F3} {M:F3} {Y:F3} {K:F3}";
         }
 
         public override bool Equals(object obj)

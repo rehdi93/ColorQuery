@@ -12,7 +12,7 @@ namespace ColorQuery
 
     class ColorQueryModel : BaseViewModel
     {
-        public Color CurrentColor
+        public Color Color
         {
             get => color;
             set {
@@ -23,7 +23,7 @@ namespace ColorQuery
                 }
             }
         }
-        public ColorFormat CurrentFormat
+        public ColorFormat Format
         {
             get => format;
             set
@@ -43,9 +43,24 @@ namespace ColorQuery
         }
 
 
-        public string UiText => FormatColorInfo(false, this.format);
+        public string UiText => GetText(this.format);
 
-        public string GetText(ColorFormat fmt) => FormatColorInfo(false, fmt);
+        public string GetText(ColorFormat format)
+        {
+            switch (format)
+            {
+                case ColorFormat.RGB:
+                    return $"{color.R} {color.G} {color.B}";
+                case ColorFormat.CMYK:
+                    var cmyk = new Cmyk(color);
+                    return cmyk.ToString();
+                case ColorFormat.HEX:
+                    return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+                default:
+                    return null;
+            }
+
+        }
 
 
         void AddRecent(Color color)
@@ -59,52 +74,6 @@ namespace ColorQuery
                     History.RemoveAt(10);
                 }
             }
-        }
-
-        string FormatColorInfo(bool ui, ColorFormat format)
-        {
-            string infoText = "...";
-
-            if (ui)
-            {
-                switch (format)
-                {
-                    case ColorFormat.RGB:
-                        infoText = $"R: {color.R}\n" +
-                                   $"G: {color.G}\n" +
-                                   $"B: {color.B}";
-                        break;
-                    case ColorFormat.CMYK:
-                        var cmyk = new Cmyk(color);
-
-                        infoText = $"C: {cmyk.C:F3}\n" +
-                                   $"M: {cmyk.M:F3}\n" +
-                                   $"Y: {cmyk.Y:F3}\n" +
-                                   $"K: {cmyk.K:F3}";
-                        break;
-                    case ColorFormat.HEX:
-                        infoText = "Hex: " + color.ToHexString();
-                        break;
-                }
-            }
-            else
-            {
-                switch (format)
-                {
-                    case ColorFormat.RGB:
-                        infoText = $"{color.R} {color.G} {color.B}";
-                        break;
-                    case ColorFormat.CMYK:
-                        var cmyk = new Cmyk(color);
-                        infoText = $"{cmyk.C:F3} {cmyk.M:F3} {cmyk.Y:F3} {cmyk.K:F3}";
-                        break;
-                    case ColorFormat.HEX:
-                        infoText = color.ToHexString();
-                        break;
-                }
-            }
-
-            return infoText;
         }
 
         Color color;

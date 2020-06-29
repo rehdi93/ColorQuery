@@ -140,7 +140,7 @@ namespace ColorQuery
             {
                 var pos = e.GetPosition(image);
                 (int X, int Y) = ((int)pos.X, (int)pos.Y);
-                model.CurrentColor = GetPixel((BitmapSource)image.Source, X, Y);
+                model.Color = GetPixel((BitmapSource)image.Source, X, Y);
                 model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
             }
 
@@ -176,7 +176,7 @@ namespace ColorQuery
 
         private void CopyCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var format = model.CurrentFormat;
+            var format = model.Format;
             if (e.Parameter is ColorFormat fmt)
                 format = fmt;
 
@@ -185,7 +185,7 @@ namespace ColorQuery
         }
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = model.CurrentColor != Colors.Transparent;
+            e.CanExecute = model.Color != Colors.Transparent;
             e.Handled = true;
         }
 
@@ -219,7 +219,7 @@ namespace ColorQuery
             var element = (FrameworkElement)e.Source;
             if (element.Tag is ColorFormat fmt)
             {
-                model.CurrentFormat = fmt;
+                model.Format = fmt;
             }
         }
 
@@ -244,7 +244,7 @@ namespace ColorQuery
             if (list.HasItems)
             {
                 var color = (Color)list.SelectedItem;
-                model.CurrentColor = color;
+                model.Color = color;
             }
 
             e.Handled = true;

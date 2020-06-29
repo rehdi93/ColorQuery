@@ -26,7 +26,7 @@
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6" Footer="Status..." Zoom="1.69">
+            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Footer="Status..." Zoom="1.69">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -148,23 +148,23 @@
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Name="previewColor" Stroke="Black" Height="80" Width="80" ContextMenu="{StaticResource ctxmColorCopy}">
                         <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding CurrentColor}" />
+                            <SolidColorBrush Color="{Binding Color}" />
                         </Rectangle.Fill>
                     </Rectangle>
                     <TextBlock Name="previewText" Margin="5,0" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" TextWrapping="Wrap">
-                        <Bold><Run Text="{Binding CurrentFormat}" /><Run>: </Run></Bold> <Run Text="{Binding UiText,Mode=OneWay}"/>
+                        <Bold><Run Text="{Binding Format}" /><Run>: </Run></Bold> <Run Text="{Binding UiText,Mode=OneWay}"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
 
-            <GroupBox Header="{p:I18n Format}" Padding="5" Grid.Column="1" HorizontalAlignment="Left" MinWidth="100">
-                <ComboBox Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding CurrentFormat}" ToolTip="{p:I18n Text=Format}" HorizontalAlignment="Stretch" />
+            <GroupBox Header="{p:I18n Format}" Padding="5" Grid.Column="1">
+                <ComboBox Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding Format}" ToolTip="{p:I18n Text=Format}" />
             </GroupBox>
 
-            <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom" Header="zoom" Grid.Column="1" MinWidth="200" HorizontalAlignment="Left">
+            <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" Header="zoom" Grid.Column="1" MinWidth="200">
                 <StackPanel>
                     <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
-                    <TextBlock Text="{Binding Zoom, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
+                    <TextBlock Text="{Binding Zoom, StringFormat='x{0:f2}'}" HorizontalAlignment="Right" />
                 </StackPanel>
             </GroupBox>
 
