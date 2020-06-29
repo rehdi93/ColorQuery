@@ -51,7 +51,7 @@ namespace ColorQuery
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
-            gbZoom.Header = NavigationCommands.Zoom.Text;
+            //gbZoom.Header = NavigationCommands.Zoom.Text;
 
             // workaround ContextMenu commands not working sometimes
             var ctxm = (ContextMenu)Resources["ctxmColorCopy"];

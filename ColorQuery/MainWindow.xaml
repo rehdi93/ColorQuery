@@ -26,7 +26,7 @@
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6" CurrentFormat="CMYK" Footer="Status..." Zoom="1.69">
+            <local:ColorQueryModel x:Key="mockModel" CurrentColor="#FFE748D6" Footer="Status..." Zoom="1.69">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -40,6 +40,12 @@
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
             </local:ColorQueryModel>
+
+            <x:Array x:Key="colorfmts" Type="local:ColorFormat">
+                <local:ColorFormat>RGB</local:ColorFormat>
+                <local:ColorFormat>HEX</local:ColorFormat>
+                <local:ColorFormat>CMYK</local:ColorFormat>
+            </x:Array>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -128,50 +134,44 @@
             </StackPanel>
         </Popup>
 
-        <StackPanel Margin="5" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <GroupBox Header="{p:Resx Color}" Padding="3" MinWidth="250">
+        <Grid Grid.Row="2" Margin="5" HorizontalAlignment="Right">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="225"/>
+                <ColumnDefinition MaxWidth="300" Width="3*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Header="{p:Resx Color}" Padding="5" Grid.RowSpan="2">
                 <StackPanel Orientation="Horizontal">
                     <Rectangle Name="previewColor" Stroke="Black" Height="80" Width="80" ContextMenu="{StaticResource ctxmColorCopy}">
                         <Rectangle.Fill>
                             <SolidColorBrush Color="{Binding CurrentColor}" />
                         </Rectangle.Fill>
                     </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center">
-                        <ComboBox Grid.Row="1" Width="60" Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding CurrentFormat}" ToolTip="{p:I18n Text=Format}" />
+                    <TextBlock Name="previewText" Margin="5,0" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" TextWrapping="Wrap">
+                        <Bold><Run Text="{Binding CurrentFormat}" /><Run>: </Run></Bold> <Run Text="{Binding UiText,Mode=OneWay}"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <GroupBox Header="{p:Resx Format}" VerticalAlignment="Top" VerticalContentAlignment="Center" Padding="5">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch">
-                        <StackPanel.Resources>
-                            <Style TargetType="RadioButton">
-                                <Setter Property="Margin" Value="3,0"/>
-                                <EventSetter Event="Checked" Handler="onColorFmtChanged" />
-                            </Style>
-                        </StackPanel.Resources>
-                        <RadioButton IsChecked="True" Content="RGB" Tag="{x:Static local:ColorFormat.RGB}"/>
-                        <RadioButton Content="HEX" Tag="{x:Static local:ColorFormat.HEX}"/>
-                        <RadioButton Content="CMYK" Tag="{x:Static local:ColorFormat.CMYK}"/>
-                    </StackPanel>
-                </GroupBox>
-                <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom" Header="zoom">
-                    <StackPanel>
-                        <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
-                        <TextBlock Text="{Binding Zoom, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
-                    </StackPanel>
-                </GroupBox>
-            </Grid>
+            <GroupBox Header="{p:Resx Format}" Padding="5" Grid.Column="1" HorizontalAlignment="Left" MinWidth="100">
+                <ComboBox Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding CurrentFormat}" ToolTip="{p:I18n Text=Format}" HorizontalAlignment="Stretch" />
+            </GroupBox>
 
-            <Button Command="Refresh" Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}"
-                    VerticalAlignment="Bottom" MinWidth="80" Margin="5,0,0,0"/>
-        </StackPanel>
+            <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" VerticalAlignment="Bottom" Header="zoom" Grid.Column="1" MinWidth="200" HorizontalAlignment="Left">
+                <StackPanel>
+                    <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
+                    <TextBlock Text="{Binding Zoom, StringFormat=x\{0:f2\}}" HorizontalAlignment="Right" />
+                </StackPanel>
+            </GroupBox>
 
+            <Button Command="Refresh" Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}" 
+                    VerticalAlignment="Bottom" MinWidth="80" Margin="5" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right"/>
+        </Grid>
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
