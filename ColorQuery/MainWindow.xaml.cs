@@ -59,7 +59,8 @@ namespace ColorQuery
             CommandManager.AddCanExecuteHandler(ctxm, ContextMenu_CanExecute);
             CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
 
-            preview.MouseWheel += preview_MouseWheel;
+            // enum as itemsource: https://stackoverflow.com/a/6145957
+            cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat)).Cast<ColorFormat>();
         }
 
         int lastMouseTimestamp = 0;

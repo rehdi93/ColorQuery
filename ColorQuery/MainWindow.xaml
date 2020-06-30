@@ -41,11 +41,8 @@
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
             </local:ColorQueryModel>
-            <x:Array x:Key="colorfmts" Type="local:ColorFormat">
-                <local:ColorFormat>RGB</local:ColorFormat>
-                <local:ColorFormat>HEX</local:ColorFormat>
-                <local:ColorFormat>CMYK</local:ColorFormat>
-            </x:Array>
+
+            <!--enum as itemsource: https://stackoverflow.com/a/6145957-->
             
             <Style x:Key="toolbarElement" TargetType="FrameworkElement">
                 <Setter Property="Margin" Value="5,0"/>
@@ -103,7 +100,7 @@
                     </Rectangle.Fill>
                 </Rectangle>
                 <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}"/>
-                <ComboBox Width="50" ToolTip="{p:I18n Format}" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding Format}" />
+                <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{p:I18n Format}" SelectedValue="{Binding Format}" />
                 <ToggleButton x:Name="histShow" ToolTip="{p:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
             </ToolBar>
@@ -145,7 +142,7 @@
 
         <ScrollViewer Name="scrollview" Margin="5" Grid.Row="2" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
             <Image x:Name="preview" Stretch="UniformToFill" Cursor="Cross"
-                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick"
+                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick" MouseWheel="preview_MouseWheel"
                    ContextMenu="{StaticResource ctxmColorCopy}">
                 <Image.RenderTransform>
                     <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
