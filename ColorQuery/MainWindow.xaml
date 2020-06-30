@@ -85,6 +85,11 @@
                 <ToggleButton x:Name="histShow" ToolTip="{p:I18n Text='Recent colors'}" Style="{StaticResource btn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}"
                               IsChecked="{Binding IsOpen, ElementName=histPopup,Mode=TwoWay}">&#x1f553;</ToggleButton>
+                <Separator/>
+                <Button Command="IncreaseZoom">&#xE12E;</Button>
+                <Button Command="DecreaseZoom">&#xE1A4;</Button>
+                <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
+                <Separator/>
                 <Button Click="miAbout_Click" ToolTip="{p:I18n About}" Width="22" Height="23">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
@@ -92,10 +97,6 @@
                         </Border>
                     </Viewbox>
                 </Button>
-                <Separator/>
-                <Button Command="IncreaseZoom">&#xE12E;</Button>
-                <Button Command="DecreaseZoom">&#xE1A4;</Button>
-                <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
             </ToolBar>
         </ToolBarTray>
 
@@ -104,7 +105,7 @@
                    MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick"
                    ContextMenu="{StaticResource ctxmColorCopy}">
                 <Image.RenderTransform>
-                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}" 
+                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
                                     CenterX="{Binding HorizontalOffset,ElementName=scrollview}"
                                     CenterY="{Binding VerticalOffset,ElementName=scrollview}"/>
                 </Image.RenderTransform>

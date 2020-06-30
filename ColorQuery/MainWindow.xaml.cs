@@ -17,6 +17,7 @@ using System.Globalization;
 using Res = ColorQuery.Properties.Resources;
 using RectI = System.Windows.Int32Rect;
 using Gdi = System.Drawing;
+using ImgInterop = System.Windows.Interop.Imaging;
 
 
 namespace ColorQuery
@@ -32,7 +33,8 @@ namespace ColorQuery
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
-            preview.Source = CaptureScreen();
+            var dpi = GetDpi();
+            preview.Source = CaptureScreen(dpi);
             ScrollHome();
 
             // set toolbar item tooltips
@@ -75,18 +77,10 @@ namespace ColorQuery
 
             g.CopyFromScreen(screenRect.X, screenRect.Y, 0, 0, bm.Size);
 
-            using var mem = new System.IO.MemoryStream();
-            bm.Save(mem, Gdi.Imaging.ImageFormat.Png);
-
-            var screen = new BitmapImage();
-            screen.BeginInit();
-            screen.CacheOption = BitmapCacheOption.OnLoad;
-            screen.StreamSource = mem;
-            screen.EndInit();
-
-            return screen;
+            var hbitmap = bm.GetHbitmap();
+            using var handle = new HBitmapHandle(hbitmap);
+            return ImgInterop.CreateBitmapSourceFromHBitmap(hbitmap, IntPtr.Zero, screenRect, BitmapSizeOptions.FromEmptyOptions());
         }
-        BitmapSource CaptureScreen() => CaptureScreen(VisualTreeHelper.GetDpi(this));
         BitmapSource CaptureScreen(DpiScale dpi) => CaptureScreen(GetScreenRect(dpi));
 
         // https://stackoverflow.com/a/14508110
@@ -107,7 +101,9 @@ namespace ColorQuery
                 (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY)
             );
         }
-        RectI GetScreenRect() => GetScreenRect(VisualTreeHelper.GetDpi(this));
+        RectI GetScreenRect() => GetScreenRect(GetDpi());
+
+        DpiScale GetDpi() => VisualTreeHelper.GetDpi(this);
 
         private void ScrollHome()
         {
@@ -120,7 +116,7 @@ namespace ColorQuery
 
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            var dpi = VisualTreeHelper.GetDpi(this);
+            var dpi = GetDpi();
 
             // hide window by moving it offscreen
             var bounds = RestoreBounds;
@@ -161,8 +157,7 @@ namespace ColorQuery
         }
         private void preview_MouseWheel(object _, MouseWheelEventArgs e)
         {
-            var modkeys = Keyboard.Modifiers;
-            if (modkeys.HasFlag(ModifierKeys.Control))
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 double zamount = zoomSlider.SmallChange;
                 var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;

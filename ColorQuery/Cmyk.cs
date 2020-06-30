@@ -71,12 +71,12 @@ namespace ColorQuery
 
         public override bool Equals(object obj)
         {
-            if (obj == null || GetType() != obj.GetType())
+            if (obj is Cmyk cmyk)
             {
-                return false;
+                return Equals(cmyk);
             }
 
-            return Equals((Cmyk)obj);
+            return false;
         }
 
         public bool Equals(Cmyk cmyk)
@@ -87,10 +87,7 @@ namespace ColorQuery
                    K == cmyk.K;
         }
 
-        public override int GetHashCode()
-        {
-            return (c, m, y, k).GetHashCode();
-        }
+        public override int GetHashCode() => (c, m, y, k).GetHashCode();
 
         public static bool operator ==(Cmyk left, Cmyk right) => left.Equals(right);
         public static bool operator !=(Cmyk left, Cmyk right) => !(left == right);
