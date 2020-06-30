@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Globalization;
-using Res = ColorQuery.Properties.Resources;
 using RectI = System.Windows.Int32Rect;
 using Gdi = System.Drawing;
 using ImgInterop = System.Windows.Interop.Imaging;
@@ -140,7 +139,7 @@ namespace ColorQuery
                 pos.X = X; pos.Y = Y;
 
                 model.Color = GetPixel((BitmapSource)image.Source, X, Y);
-                model.Footer = string.Format(Res.mousepos_fmt, pos);
+                model.Footer = string.Format(translate("mousepos_fmt"), pos);
             }
 
         }
@@ -148,14 +147,14 @@ namespace ColorQuery
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Footer = string.Format(Res.mousepos_fmt, "OB");
+                model.Footer = string.Format(translate("mousepos_fmt"), "OB");
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
                 pos.X = (int)pos.X;
                 pos.Y = (int)pos.Y;
-                model.Footer = string.Format(Res.mousepos_fmt, pos);
+                model.Footer = string.Format(translate("mousepos_fmt"), pos);
                 lastMouseTimestamp = e.Timestamp;
             }
         }
@@ -180,7 +179,7 @@ namespace ColorQuery
                 format = fmt;
 
             Clipboard.SetText(model.GetText(format));
-            model.Footer = Res.ColorCopied;
+            model.Footer = translate("Color copied");
         }
         private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
         {

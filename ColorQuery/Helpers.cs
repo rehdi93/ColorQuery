@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Resources;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
@@ -6,9 +7,11 @@ namespace ColorQuery
 {
     public static class I18n
     {
+        public static readonly ResourceManager Strings = new ResourceManager("ColorQuery.Resources.strings", typeof(App).Assembly);
+
         public static string translate(string text)
         {
-            var result = Properties.Resources.ResourceManager.GetString(text);
+            var result = Strings.GetString(text);
             return string.IsNullOrEmpty(result) ? text : result;
         }
     }

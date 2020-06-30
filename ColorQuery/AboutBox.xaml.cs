@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
+using static ColorQuery.I18n;
 
 namespace ColorQuery
 {
@@ -17,9 +18,9 @@ namespace ColorQuery
             btnOk.Click += delegate { Close(); };
             btnOk.Content = ApplicationCommands.Close.Text;
 
-            Title = Properties.Resources.About + ' ' + this.AssemblyTitle;
+            Title = translate("About") + ' ' + this.AssemblyTitle;
             txtProductName.Text = this.AssemblyProduct;
-            txtVersion.Text = Properties.Resources.Version + ' ' + this.AssemblyVersion;
+            txtVersion.Text = translate("Version") + ' ' + this.AssemblyVersion;
             txtCopyright.Text = this.AssemblyCopyright;
             weblink.RequestNavigate += (_, e) => {
                 var psi = new ProcessStartInfo(e.Uri.ToString()) {

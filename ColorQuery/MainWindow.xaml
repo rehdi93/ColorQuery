@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ColorQuery" xmlns:p="clr-namespace:ColorQuery.Properties"
+        xmlns:local="clr-namespace:ColorQuery"
+        xmlns:p="clr-namespace:ColorQuery.Properties"
         mc:Ignorable="d"
         Title="Color Query" Width="800" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{p:I18n CopyColor}" Command="Copy">
+                <MenuItem Header="{p:I18n 'Copy color'}" Command="Copy">
                     <MenuItem.Icon>
                         <Rectangle>
                             <Rectangle.Fill>
@@ -19,7 +20,7 @@
                         </Rectangle>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{p:I18n CopyColorAs}">
+                <MenuItem Header="{p:I18n 'Copy color as'}">
                     <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
                     <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
                     <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
@@ -83,17 +84,13 @@
             <ToolBar BandIndex="2">
                 <Button Name="btnRefresh" Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
-                <ToggleButton x:Name="histShow" ToolTip="{p:I18n Text='Recent colors'}" Style="{StaticResource toolbarBtn}"
-                              IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
-                <!--<Button Command="IncreaseZoom">&#xE12E;</Button>-->
-                <!--<Button Command="DecreaseZoom">&#xE1A4;</Button>-->
                 <ToggleButton Name="tbZoom" Style="{StaticResource toolbarBtn}">&#xE1A3;</ToggleButton>
                 <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
                 <Separator/>
                 <Button Click="miAbout_Click" ToolTip="{p:I18n About}" Width="22" Height="23">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
-                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
+                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
                         </Border>
                     </Viewbox>
                 </Button>
@@ -107,6 +104,8 @@
                 </Rectangle>
                 <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}"/>
                 <ComboBox Width="50" ToolTip="{p:I18n Format}" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding Format}" />
+                <ToggleButton x:Name="histShow" ToolTip="{p:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
+                              IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
             </ToolBar>
         </ToolBarTray>
 
@@ -157,9 +156,9 @@
         </ScrollViewer>
 
 
-        <StatusBar Grid.Row="3">
+        <StatusBar Grid.Row="3" FontSize="11">
             <StatusBarItem>
-                <TextBlock Name="statusTxt" Text="{Binding Footer}" FontSize="11"/>
+                <TextBlock Name="statusTxt" Text="{Binding Footer}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
