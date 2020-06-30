@@ -18,6 +18,7 @@ using Res = ColorQuery.Properties.Resources;
 using RectI = System.Windows.Int32Rect;
 using Gdi = System.Drawing;
 using ImgInterop = System.Windows.Interop.Imaging;
+using static ColorQuery.I18n;
 
 
 namespace ColorQuery
@@ -52,7 +53,7 @@ namespace ColorQuery
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
-            gbZoom.Header = NavigationCommands.Zoom.Text;
+            tbZoom.ToolTip = NavigationCommands.Zoom.Text;
 
             // workaround ContextMenu commands not working sometimes
             var ctxm = (ContextMenu)Resources["ctxmColorCopy"];
@@ -136,8 +137,10 @@ namespace ColorQuery
             {
                 var pos = e.GetPosition(image);
                 (int X, int Y) = ((int)pos.X, (int)pos.Y);
+                pos.X = X; pos.Y = Y;
+
                 model.Color = GetPixel((BitmapSource)image.Source, X, Y);
-                model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
+                model.Footer = string.Format(Res.mousepos_fmt, pos);
             }
 
         }
@@ -145,13 +148,14 @@ namespace ColorQuery
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Footer = string.Format(Res.mousepos_fmt, "[OB]");
+                model.Footer = string.Format(Res.mousepos_fmt, "OB");
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
-                (int X, int Y) = ((int)pos.X, (int)pos.Y);
-                model.Footer = string.Format(Res.mousepos_fmt2, X, Y);
+                pos.X = (int)pos.X;
+                pos.Y = (int)pos.Y;
+                model.Footer = string.Format(Res.mousepos_fmt, pos);
                 lastMouseTimestamp = e.Timestamp;
             }
         }
@@ -209,15 +213,6 @@ namespace ColorQuery
             }
         }
 
-        private void onColorFmtChanged(object _, RoutedEventArgs e)
-        {
-            var element = (FrameworkElement)e.Source;
-            if (element.Tag is ColorFormat fmt)
-            {
-                model.Format = fmt;
-            }
-        }
-
         private void miAbout_Click(object _, RoutedEventArgs __)
         {
             var about = new AboutBox();
@@ -253,7 +248,6 @@ namespace ColorQuery
                 e.Handled = true;
             }
         }
-
         private void ContextMenu_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (sender == Resources["ctxmColorCopy"] && e.Command == ApplicationCommands.Copy)

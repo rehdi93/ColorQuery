@@ -40,12 +40,22 @@
                     <Color>Cyan</Color>
                 </local:ColorQueryModel.History>
             </local:ColorQueryModel>
-
             <x:Array x:Key="colorfmts" Type="local:ColorFormat">
                 <local:ColorFormat>RGB</local:ColorFormat>
                 <local:ColorFormat>HEX</local:ColorFormat>
                 <local:ColorFormat>CMYK</local:ColorFormat>
             </x:Array>
+            
+            <Style x:Key="toolbarElement" TargetType="FrameworkElement">
+                <Setter Property="Margin" Value="5,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+            <Style x:Key="toolbarBtn" TargetType="ButtonBase">
+                <Setter Property="Margin" Value="5,0"/>
+                <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+                <Setter Property="FontSize" Value="15"/>
+            </Style>
+            <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource toolbarBtn}" TargetType="Button"/>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -64,30 +74,20 @@
     <Grid d:DataContext="{StaticResource mockModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
 
         <ToolBarTray Name="tooltray">
-            <ToolBarTray.Resources>
-                <Style x:Key="btn" TargetType="ButtonBase">
-                    <Setter Property="Margin" Value="5,0"/>
-                    <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
-                    <Setter Property="FontSize" Value="15"/>
-                </Style>
-                <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource btn}" TargetType="Button"/>
-            </ToolBarTray.Resources>
-
-            <ToolBar>
+            <ToolBar BandIndex="2">
                 <Button Name="btnRefresh" Command="Refresh">&#xE117;</Button>
                 <Button Command="Copy">&#xE16f;</Button>
-                <ToggleButton x:Name="histShow" ToolTip="{p:I18n Text='Recent colors'}" Style="{StaticResource btn}"
-                              IsEnabled="{Binding HasItems, ElementName=histList}"
-                              IsChecked="{Binding IsOpen, ElementName=histPopup,Mode=TwoWay}">&#x1f553;</ToggleButton>
-                <Separator/>
-                <Button Command="IncreaseZoom">&#xE12E;</Button>
-                <Button Command="DecreaseZoom">&#xE1A4;</Button>
+                <ToggleButton x:Name="histShow" ToolTip="{p:I18n Text='Recent colors'}" Style="{StaticResource toolbarBtn}"
+                              IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
+                <!--<Button Command="IncreaseZoom">&#xE12E;</Button>-->
+                <!--<Button Command="DecreaseZoom">&#xE1A4;</Button>-->
+                <ToggleButton Name="tbZoom" Style="{StaticResource toolbarBtn}">&#xE1A3;</ToggleButton>
                 <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
                 <Separator/>
                 <Button Click="miAbout_Click" ToolTip="{p:I18n About}" Width="22" Height="23">
@@ -98,21 +98,30 @@
                     </Viewbox>
                 </Button>
             </ToolBar>
+            <ToolBar BandIndex="1" ToolTip="{p:I18n Color}" ContextMenu="{StaticResource ctxmColorCopy}">
+                <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,0,0" 
+                           Style="{StaticResource toolbarElement}">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="{Binding Color}" />
+                    </Rectangle.Fill>
+                </Rectangle>
+                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}"/>
+                <ComboBox Width="50" ToolTip="{p:I18n Format}" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding Format}" />
+            </ToolBar>
         </ToolBarTray>
 
-        <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
-            <Image x:Name="preview" Stretch="UniformToFill" Cursor="Cross"
-                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick"
-                   ContextMenu="{StaticResource ctxmColorCopy}">
-                <Image.RenderTransform>
-                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
-                                    CenterX="{Binding HorizontalOffset,ElementName=scrollview}"
-                                    CenterY="{Binding VerticalOffset,ElementName=scrollview}"/>
-                </Image.RenderTransform>
-            </Image>
-        </ScrollViewer>
+        <Popup x:Name="zoomPopup" StaysOpen="False"
+               IsOpen="{Binding IsChecked,ElementName=tbZoom}" PlacementTarget="{Binding ElementName=tbZoom}">
+            <StackPanel Background="White">
+                <StackPanel Margin="5">
+                    <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" Width="200"/>
+                    <TextBlock Text="{Binding Zoom,StringFormat='x{0:f2}'}" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </StackPanel>
+        </Popup>
 
-        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True" PlacementTarget="{Binding ElementName=histShow}">
+        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True" 
+               IsOpen="{Binding IsChecked,ElementName=histShow}" PlacementTarget="{Binding ElementName=histShow}">
             <StackPanel Background="White" Margin="3">
                 <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
                     <ListView.ItemsPanel>
@@ -134,44 +143,19 @@
             </StackPanel>
         </Popup>
 
-        <Grid Grid.Row="2" Margin="5" HorizontalAlignment="Right">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="225"/>
-                <ColumnDefinition MaxWidth="300" Width="3*"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
 
-            <GroupBox Header="{p:I18n Color}" Padding="5" Grid.RowSpan="2">
-                <StackPanel Orientation="Horizontal">
-                    <Rectangle Name="previewColor" Stroke="Black" Height="80" Width="80" ContextMenu="{StaticResource ctxmColorCopy}">
-                        <Rectangle.Fill>
-                            <SolidColorBrush Color="{Binding Color}" />
-                        </Rectangle.Fill>
-                    </Rectangle>
-                    <TextBlock Name="previewText" Margin="5,0" MinWidth="95" FontFamily="Consolas, DejaVu Sans Mono" VerticalAlignment="Center" TextWrapping="Wrap">
-                        <Bold><Run Text="{Binding Format}" /><Run>: </Run></Bold> <Run Text="{Binding UiText,Mode=OneWay}"/>
-                    </TextBlock>
-                </StackPanel>
-            </GroupBox>
+        <ScrollViewer Name="scrollview" Margin="5" Grid.Row="2" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
+            <Image x:Name="preview" Stretch="UniformToFill" Cursor="Cross"
+                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick"
+                   ContextMenu="{StaticResource ctxmColorCopy}">
+                <Image.RenderTransform>
+                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
+                                    CenterX="{Binding HorizontalOffset,ElementName=scrollview}"
+                                    CenterY="{Binding VerticalOffset,ElementName=scrollview}"/>
+                </Image.RenderTransform>
+            </Image>
+        </ScrollViewer>
 
-            <GroupBox Header="{p:I18n Format}" Padding="5" Grid.Column="1">
-                <ComboBox Margin="2" ItemsSource="{StaticResource colorfmts}" SelectedValue="{Binding Format}" ToolTip="{p:I18n Text=Format}" />
-            </GroupBox>
-
-            <GroupBox Name="gbZoom" Grid.Row="1" Padding="5" Header="zoom" Grid.Column="1" MinWidth="200">
-                <StackPanel>
-                    <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" LargeChange="0.5" />
-                    <TextBlock Text="{Binding Zoom, StringFormat='x{0:f2}'}" HorizontalAlignment="Right" />
-                </StackPanel>
-            </GroupBox>
-
-            <Button Command="Refresh" Content="{Binding Command.Text, RelativeSource={RelativeSource Self}}" 
-                    VerticalAlignment="Bottom" MinWidth="80" Margin="5" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right"/>
-        </Grid>
 
         <StatusBar Grid.Row="3">
             <StatusBarItem>
