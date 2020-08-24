@@ -15,19 +15,19 @@
                     <MenuItem.Icon>
                         <Rectangle>
                             <Rectangle.Fill>
-                                <SolidColorBrush Color="{Binding CurrentColor}" />
+                                <SolidColorBrush Color="{Binding Color}" />
                             </Rectangle.Fill>
                         </Rectangle>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="{p:I18n 'Copy color as'}">
                     <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
-                    <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
                     <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
+                    <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Footer="Status..." Zoom="1.69">
+            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Footer="Status..." Zoom="1.69" Format="HEX">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -42,8 +42,6 @@
                 </local:ColorQueryModel.History>
             </local:ColorQueryModel>
 
-            <!--enum as itemsource: https://stackoverflow.com/a/6145957-->
-            
             <Style x:Key="toolbarElement" TargetType="FrameworkElement">
                 <Setter Property="Margin" Value="5,0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -65,7 +63,7 @@
         <CommandBinding Command="Refresh" Executed="RefreshCmd_Executed"/>
         <CommandBinding Command="IncreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
         <CommandBinding Command="DecreaseZoom" Executed="ZoomCmd_Exec" CanExecute="ZoomCmd_CanExec" />
-        <CommandBinding Command="Copy" Executed="CopyCmd_Exec" CanExecute="CopyCmd_CanExec" />
+        <CommandBinding Command="Copy" Executed="CopyCmd_Exec" />
     </Window.CommandBindings>
 
 
@@ -92,22 +90,22 @@
                     </Viewbox>
                 </Button>
             </ToolBar>
-            <ToolBar BandIndex="1" ToolTip="{p:I18n Color}" ContextMenu="{StaticResource ctxmColorCopy}">
+            <ToolBar BandIndex="1" ToolTip="{p:I18n Color}">
                 <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,0,0" 
-                           Style="{StaticResource toolbarElement}">
+                           Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="{Binding Color}" />
                     </Rectangle.Fill>
                 </Rectangle>
-                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}"/>
+                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}"/>
                 <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{p:I18n Format}" SelectedValue="{Binding Format}" />
-                <ToggleButton x:Name="histShow" ToolTip="{p:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
+                <ToggleButton x:Name="btnShowHistory" ToolTip="{p:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
             </ToolBar>
         </ToolBarTray>
 
         <Popup x:Name="zoomPopup" StaysOpen="False"
-               IsOpen="{Binding IsChecked,ElementName=tbZoom}" PlacementTarget="{Binding ElementName=tbZoom}">
+               IsOpen="{Binding IsChecked,ElementName=tbZoom}" PlacementTarget="{Binding ElementName=tbZoom}" PopupAnimation="Scroll">
             <StackPanel Background="White">
                 <StackPanel Margin="5">
                     <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" Width="200"/>
@@ -117,7 +115,7 @@
         </Popup>
 
         <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True" 
-               IsOpen="{Binding IsChecked,ElementName=histShow}" PlacementTarget="{Binding ElementName=histShow}">
+               IsOpen="{Binding IsChecked,ElementName=btnShowHistory}" PlacementTarget="{Binding ElementName=btnShowHistory}">
             <StackPanel Background="White" Margin="3">
                 <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
                     <ListView.ItemsPanel>

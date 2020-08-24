@@ -1,11 +1,14 @@
-﻿About=Sobre
+﻿# text
+About=Sobre
 Clear=Limpar
 Color=Cor
 Color copied=Cor copiada
 Copy color=Copiar cor
 Copy color as=Copiar cor como
 Format=Formato
-mousepos_fmt=Pos. mouse: {0}
 Options=Opções
-Recent colors=Cores recentes
 Version=Versão
+Recent colors=Cores recentes
+
+# text with formating
+mousepos_fmt=Pos. mouse: {0}

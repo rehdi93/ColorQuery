@@ -7,19 +7,24 @@ namespace ColorQuery
 {
     public static class I18n
     {
-        public static readonly ResourceManager Strings = new ResourceManager("ColorQuery.Resources.strings", typeof(App).Assembly);
+        static readonly ResourceManager RM = new ResourceManager("ColorQuery.Resources.strings", typeof(App).Assembly);
 
         public static string translate(string text)
         {
-            var result = Strings.GetString(text);
-            return string.IsNullOrEmpty(result) ? text : result;
+            try
+            {
+                var result = RM.GetString(text);
+                return string.IsNullOrEmpty(result) ? text : result;
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("translate(\"{0}\") error: {1}", text, e.Message);
+                return text;
+            }
         }
     }
 
-    enum ColorFormat
-    {
-        RGB, CMYK, HEX
-    }
+    enum ColorFormat { RGB, HEX, CMYK }
 
     class HBitmapHandle : SafeHandleZeroOrMinusOneIsInvalid
     {

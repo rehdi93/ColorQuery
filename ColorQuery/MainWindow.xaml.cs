@@ -54,14 +54,15 @@ namespace ColorQuery
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
             tbZoom.ToolTip = NavigationCommands.Zoom.Text;
 
-            // workaround ContextMenu commands not working sometimes
             var ctxm = (ContextMenu)Resources["ctxmColorCopy"];
-            CommandManager.AddCanExecuteHandler(ctxm, ContextMenu_CanExecute);
-            CommandManager.AddExecutedHandler(ctxm, ContextMenu_Executed);
+            ctxm.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, CopyCmd_Exec));
 
             // enum as itemsource: https://stackoverflow.com/a/6145957
-            cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat)).Cast<ColorFormat>();
+            cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat));
+
+            Resources.Remove("mockModel");
         }
+
 
         int lastMouseTimestamp = 0;
 
@@ -80,7 +81,8 @@ namespace ColorQuery
 
             var hbitmap = bm.GetHbitmap();
             using var handle = new HBitmapHandle(hbitmap);
-            return ImgInterop.CreateBitmapSourceFromHBitmap(hbitmap, IntPtr.Zero, screenRect, BitmapSizeOptions.FromEmptyOptions());
+            return ImgInterop.CreateBitmapSourceFromHBitmap(hbitmap, IntPtr.Zero, screenRect, 
+                    BitmapSizeOptions.FromEmptyOptions());
         }
         BitmapSource CaptureScreen(DpiScale dpi) => CaptureScreen(GetScreenRect(dpi));
 
@@ -114,7 +116,6 @@ namespace ColorQuery
             scrollview.ScrollToVerticalOffset(Math.Abs(rect.Y));
         }
 
-
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
             var dpi = GetDpi();
@@ -138,7 +139,6 @@ namespace ColorQuery
                 var pos = e.GetPosition(image);
                 (int X, int Y) = ((int)pos.X, (int)pos.Y);
                 pos.X = X; pos.Y = Y;
-
                 model.Color = GetPixel((BitmapSource)image.Source, X, Y);
                 model.Footer = string.Format(translate("mousepos_fmt"), pos);
             }
@@ -163,11 +163,11 @@ namespace ColorQuery
         {
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
-                double zamount = zoomSlider.SmallChange;
+                double amount = zoomSlider.SmallChange;
                 var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;
 
                 if (command.CanExecute(null, preview))
-                    command.Execute(zamount, preview);
+                    command.Execute(amount, preview);
 
                 e.Handled = true;
             }
@@ -175,16 +175,11 @@ namespace ColorQuery
 
         private void CopyCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var format = model.Format;
-            if (e.Parameter is ColorFormat fmt)
-                format = fmt;
+            var format = e.Parameter is ColorFormat f ? f : model.Format;
 
-            Clipboard.SetText(model.GetText(format));
-            model.Footer = translate("Color copied");
-        }
-        private void CopyCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = model.Color != Colors.Transparent;
+            var text = model.GetText(format);
+            Clipboard.SetText(text);
+            model.Footer = translate("Color copied") + ": [" + text + "]";
             e.Handled = true;
         }
 
@@ -238,23 +233,6 @@ namespace ColorQuery
             }
 
             e.Handled = true;
-        }
-
-        private void ContextMenu_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            if (sender == Resources["ctxmColorCopy"] && e.Command == ApplicationCommands.Copy)
-            {
-                CopyCmd_CanExec(sender, e);
-                e.Handled = true;
-            }
-        }
-        private void ContextMenu_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (sender == Resources["ctxmColorCopy"] && e.Command == ApplicationCommands.Copy)
-            {
-                CopyCmd_Exec(sender, e);
-                e.Handled = true;
-            }
         }
     }
 
