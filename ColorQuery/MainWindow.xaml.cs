@@ -59,6 +59,8 @@ namespace ColorQuery
 
             // enum as itemsource: https://stackoverflow.com/a/6145957
             cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat));
+
+            Resources.Remove("mockModel");
         }
 
 
@@ -173,11 +175,7 @@ namespace ColorQuery
 
         private void CopyCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            ColorFormat format;
-            if (e.Parameter is ColorFormat fmt)
-                format = fmt;
-            else
-                format = model.Format;
+            var format = e.Parameter is ColorFormat f ? f : model.Format;
 
             var text = model.GetText(format);
             Clipboard.SetText(text);
