@@ -137,9 +137,7 @@ namespace ColorQuery
             if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
             {
                 var pos = e.GetPosition(image);
-                (int X, int Y) = ((int)pos.X, (int)pos.Y);
-                pos.X = X; pos.Y = Y;
-                model.Color = GetPixel((BitmapSource)image.Source, X, Y);
+                model.Color = GetPixel((BitmapSource)image.Source, (int)pos.X, (int)pos.Y);
                 model.Footer = string.Format(translate("mousepos_fmt"), pos);
             }
 
@@ -153,8 +151,6 @@ namespace ColorQuery
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
-                pos.X = (int)pos.X;
-                pos.Y = (int)pos.Y;
                 model.Footer = string.Format(translate("mousepos_fmt"), pos);
                 lastMouseTimestamp = e.Timestamp;
             }
