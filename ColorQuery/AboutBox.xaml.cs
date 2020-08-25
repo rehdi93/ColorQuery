@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using static ColorQuery.I18n;
+using static ColorQuery.Resources.I18n;
 
 namespace ColorQuery
 {

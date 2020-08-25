@@ -17,7 +17,7 @@ using System.Globalization;
 using RectI = System.Windows.Int32Rect;
 using Gdi = System.Drawing;
 using ImgInterop = System.Windows.Interop.Imaging;
-using static ColorQuery.I18n;
+using static ColorQuery.Resources.I18n;
 
 
 namespace ColorQuery

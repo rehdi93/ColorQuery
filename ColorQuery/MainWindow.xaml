@@ -4,14 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ColorQuery"
-        xmlns:p="clr-namespace:ColorQuery.Properties"
+        xmlns:r="clr-namespace:ColorQuery.Resources"
         mc:Ignorable="d"
         Title="Color Query" Width="800" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
         <ResourceDictionary>
             <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{p:I18n 'Copy color'}" Command="Copy">
+                <MenuItem Header="{r:I18n 'Copy color'}" Command="Copy">
                     <MenuItem.Icon>
                         <Rectangle>
                             <Rectangle.Fill>
@@ -20,7 +20,7 @@
                         </Rectangle>
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="{p:I18n 'Copy color as'}">
+                <MenuItem Header="{r:I18n 'Copy color as'}">
                     <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
                     <MenuItem Header="Hex"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
                     <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
@@ -82,7 +82,7 @@
                 <ToggleButton Name="tbZoom" Style="{StaticResource toolbarBtn}">&#xE1A3;</ToggleButton>
                 <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
                 <Separator/>
-                <Button Click="miAbout_Click" ToolTip="{p:I18n About}" Width="22" Height="23">
+                <Button Click="miAbout_Click" ToolTip="{r:I18n About}" Width="22" Height="23">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
                             <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
@@ -90,7 +90,7 @@
                     </Viewbox>
                 </Button>
             </ToolBar>
-            <ToolBar BandIndex="1" ToolTip="{p:I18n Color}">
+            <ToolBar BandIndex="1" ToolTip="{r:I18n Color}">
                 <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,0,0" 
                            Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}">
                     <Rectangle.Fill>
@@ -98,8 +98,8 @@
                     </Rectangle.Fill>
                 </Rectangle>
                 <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}"/>
-                <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{p:I18n Format}" SelectedValue="{Binding Format}" />
-                <ToggleButton x:Name="btnShowHistory" ToolTip="{p:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
+                <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{r:I18n Format}" SelectedValue="{Binding Format}" />
+                <ToggleButton x:Name="btnShowHistory" ToolTip="{r:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
             </ToolBar>
         </ToolBarTray>
@@ -133,7 +133,7 @@
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
-                <Button Click="histClear_Click" Content="{p:I18n Clear}"></Button>
+                <Button Click="histClear_Click" Content="{r:I18n Clear}"></Button>
             </StackPanel>
         </Popup>
 
