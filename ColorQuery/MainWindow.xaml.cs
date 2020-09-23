@@ -81,8 +81,11 @@ namespace ColorQuery
 
             var hbitmap = bm.GetHbitmap();
             using var handle = new HBitmapHandle(hbitmap);
-            return ImgInterop.CreateBitmapSourceFromHBitmap(hbitmap, IntPtr.Zero, screenRect, 
-                    BitmapSizeOptions.FromEmptyOptions());
+            return ImgInterop.CreateBitmapSourceFromHBitmap(
+                hbitmap,
+                IntPtr.Zero,
+                new RectI(0, 0, bm.Width, bm.Height),
+                BitmapSizeOptions.FromEmptyOptions());
         }
         BitmapSource CaptureScreen(DpiScale dpi) => CaptureScreen(GetScreenRect(dpi));
 
