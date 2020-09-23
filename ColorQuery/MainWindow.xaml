@@ -82,10 +82,10 @@
                 <ToggleButton Name="tbZoom" Style="{StaticResource toolbarBtn}">&#xE1A3;</ToggleButton>
                 <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
                 <Separator/>
-                <Button Click="miAbout_Click" ToolTip="{r:I18n About}" Width="22" Height="23">
+                <Button Click="miAbout_Click" ToolTip="{r:I18n About}" Height="25">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
-                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Verdana" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
+                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Times New Roman" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
                         </Border>
                     </Viewbox>
                 </Button>
@@ -105,7 +105,7 @@
         </ToolBarTray>
 
         <Popup x:Name="zoomPopup" StaysOpen="False"
-               IsOpen="{Binding IsChecked,ElementName=tbZoom}" PlacementTarget="{Binding ElementName=tbZoom}" PopupAnimation="Scroll">
+               IsOpen="{Binding IsChecked,ElementName=tbZoom}" PlacementTarget="{Binding ElementName=tbZoom}">
             <StackPanel Background="White">
                 <StackPanel Margin="5">
                     <Slider x:Name="zoomSlider" Value="{Binding Zoom,Mode=TwoWay}" Minimum="1" Maximum="10" Width="200"/>

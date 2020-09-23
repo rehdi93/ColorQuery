@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Globalization;
-using RectI = System.Windows.Int32Rect;
 using Gdi = System.Drawing;
 using ImgInterop = System.Windows.Interop.Imaging;
 using static ColorQuery.Resources.I18n;
@@ -33,8 +24,7 @@ namespace ColorQuery
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
-            var dpi = GetDpi();
-            preview.Source = CaptureScreen(dpi);
+            preview.Source = CaptureScreen();
             ScrollHome();
 
             // set toolbar item tooltips
@@ -63,11 +53,23 @@ namespace ColorQuery
             Resources.Remove("mockModel");
         }
 
-
         int lastMouseTimestamp = 0;
 
-        BitmapSource CaptureScreen(RectI screenRect)
+        double maxZoom { get => zoomSlider.Maximum; set => zoomSlider.Maximum = value; }
+        double minZoom { get => zoomSlider.Minimum; set => zoomSlider.Minimum = value; }
+        double smallZoomChange { get => zoomSlider.SmallChange; set => zoomSlider.SmallChange = value; }
+        double bigZoomChange { get => zoomSlider.LargeChange; set => zoomSlider.LargeChange = value; }
+
+
+        BitmapSource CaptureScreen(Rect area, DpiScale dpi)
         {
+            var screenRect = new Int32Rect(
+                (int)(area.X * dpi.DpiScaleX),
+                (int)(area.Y * dpi.DpiScaleY),
+                (int)(area.Width * dpi.DpiScaleX),
+                (int)(area.Height * dpi.DpiScaleY)
+            );
+
             using var bm = new Gdi.Bitmap(screenRect.Width, screenRect.Height);
             bm.SetResolution(96f, 96f);
 
@@ -84,50 +86,58 @@ namespace ColorQuery
             return ImgInterop.CreateBitmapSourceFromHBitmap(
                 hbitmap,
                 IntPtr.Zero,
-                new RectI(0, 0, bm.Width, bm.Height),
+                new Int32Rect(0, 0, bm.Width, bm.Height),
                 BitmapSizeOptions.FromEmptyOptions());
         }
-        BitmapSource CaptureScreen(DpiScale dpi) => CaptureScreen(GetScreenRect(dpi));
+        BitmapSource CaptureScreen()
+        {
+            var (rect, dpi) = GetScreenInfo();
+            return CaptureScreen(rect, dpi);
+        }
 
         // https://stackoverflow.com/a/14508110
-        Color GetPixel(BitmapSource image, int x, int y)
+        Color GetPixel(BitmapSource image, Point p)
         {
-            var crop = new CroppedBitmap(image, new RectI(x, y, 1, 1));
+            var crop = new CroppedBitmap(image, new Int32Rect((int)p.X, (int)p.Y, 1, 1));
             var pixelbuff = new byte[4]; // { blue, green, red, alpha }
             crop.CopyPixels(pixelbuff, 4, 0);
             return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
         }
 
-        RectI GetScreenRect(DpiScale dpi)
-        {
-            return new RectI(
-                (int)(SystemParameters.VirtualScreenLeft * dpi.DpiScaleX),
-                (int)(SystemParameters.VirtualScreenTop * dpi.DpiScaleY),
-                (int)(SystemParameters.VirtualScreenWidth * dpi.DpiScaleX),
-                (int)(SystemParameters.VirtualScreenHeight * dpi.DpiScaleY)
-            );
-        }
-        RectI GetScreenRect() => GetScreenRect(GetDpi());
-
         DpiScale GetDpi() => VisualTreeHelper.GetDpi(this);
+
+        (Rect,DpiScale) GetScreenInfo()
+        {
+            var screen = new Rect(
+                SystemParameters.VirtualScreenLeft,
+                SystemParameters.VirtualScreenTop,
+                SystemParameters.VirtualScreenWidth,
+                SystemParameters.VirtualScreenHeight
+            );
+            var dpi = GetDpi();
+
+            return (screen, dpi);
+        }
+
 
         private void ScrollHome()
         {
-            var rect = GetScreenRect();
+            var (r, dpi) = GetScreenInfo();
             // displays to the left of main have negative coords
-            scrollview.ScrollToHorizontalOffset(Math.Abs(rect.X));
-            scrollview.ScrollToVerticalOffset(Math.Abs(rect.Y));
+            scrollview.ScrollToHorizontalOffset(Math.Abs(r.X * dpi.DpiScaleX));
+            scrollview.ScrollToVerticalOffset(Math.Abs(r.Y * dpi.DpiScaleY));
         }
+
 
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            var dpi = GetDpi();
+            var (screenRect, dpi) = GetScreenInfo();
 
             // hide window by moving it offscreen
             var bounds = RestoreBounds;
             Left = Top = int.MaxValue;
             
-            preview.Source = CaptureScreen(dpi);
+            preview.Source = CaptureScreen(screenRect, dpi);
 
             Left = bounds.Left;
             Top = bounds.Top;
@@ -140,10 +150,9 @@ namespace ColorQuery
             if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
             {
                 var pos = e.GetPosition(image);
-                model.Color = GetPixel((BitmapSource)image.Source, (int)pos.X, (int)pos.Y);
+                model.Color = GetPixel((BitmapSource)image.Source, pos);
                 model.Footer = string.Format(translate("mousepos_fmt"), pos);
             }
-
         }
         private void preview_MouseMove(object sender, MouseEventArgs e)
         {
@@ -162,11 +171,10 @@ namespace ColorQuery
         {
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
-                double amount = zoomSlider.SmallChange;
                 var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;
 
                 if (command.CanExecute(null, preview))
-                    command.Execute(amount, preview);
+                    command.Execute(smallZoomChange, preview);
 
                 e.Handled = true;
             }
@@ -184,7 +192,7 @@ namespace ColorQuery
 
         private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
         {
-            var amount = e.Parameter is double param ? param : zoomSlider.LargeChange;
+            var amount = e.Parameter is double param ? param : bigZoomChange;
 
             if (e.Command == NavigationCommands.IncreaseZoom)
             {
@@ -199,11 +207,11 @@ namespace ColorQuery
         {
             if (e.Command == NavigationCommands.IncreaseZoom)
             {
-                e.CanExecute = model.Zoom < zoomSlider?.Maximum;
+                e.CanExecute = model.Zoom < maxZoom;
             }
             else if (e.Command == NavigationCommands.DecreaseZoom)
             {
-                e.CanExecute = model.Zoom > zoomSlider?.Minimum;
+                e.CanExecute = model.Zoom > minZoom;
             }
         }
 
