@@ -11,4 +11,4 @@ Version=
 Recent colors=
 
 # text with formating
-mousepos_fmt=Mouse pos: {0}
+mousepos_fmt=Mouse pos: {0:F0}

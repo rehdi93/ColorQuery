@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Windows;
@@ -15,19 +16,21 @@ namespace ColorQuery
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            LangOverride();
             base.OnStartup(e);
+        }
 
-            // override language
+        void LangOverride()
+        {
+            var envvarsUI = new[] { "LC_ALL", "LC_CTYPE", "LANG" };
+
             try
             {
-                var lang = new[] { "LANG", "LC_CTYPE", "LC_ALL" }.Select(Env.GetEnvironmentVariable).First(v => v != null);
+                var lang = envvarsUI.Select(Env.GetEnvironmentVariable).First(v => v != null);
+                var culture = new CultureInfo(StripEnc(lang));
+                CultureInfo.CurrentUICulture = culture;
                 
-                // .net doesn't understand encoding suffix (pt-br.uf8)
-                int suffix = lang.LastIndexOf('.');
-                if (suffix != -1)
-                    lang = lang.Substring(0, suffix);
-
-                CultureInfo.CurrentUICulture = new CultureInfo(lang);
+                Trace.WriteLine($"using {culture} for the Ui.", nameof(LangOverride));
             }
             catch (InvalidOperationException)
             {
@@ -35,7 +38,16 @@ namespace ColorQuery
             }
             catch (CultureNotFoundException ex)
             {
-                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.Message, nameof(LangOverride));
+            }
+
+            // .net doesn't understand encoding suffix (pt_BR.uf8)
+            static string StripEnc(string l)
+            {
+                var dot = l.LastIndexOf('.');
+                if (dot != -1)
+                    l = l.Substring(0, dot);
+                return l;
             }
         }
     }

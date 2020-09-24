@@ -7,13 +7,16 @@ When *Color Query* opens, it captures a snapshot of what's on your screen.
 
 ![app picture](github/app1.png)
 
-To get a color, click anywhere in the panel (Shown in red). You will see the color preview below change.
+To get a color, click anywhere in the preview panel (click shown in red). You will see a preview of the color
+as well as options to select the format (RGB, HEX or CMYK).
 
-![app picture click](github/Inkedapp1_LI.jpg)
+![app picture click](github/app1-clicked.png)
 
 Press `Ctrl+C` to copy the selected color to the clipboard.
 
-To refresh the panel, click the refresh button, or press ´F5´.
+To refresh the panel, click the *Refresh* button, or press `F5`.
+
+You can control the zoom by clicking the *Zoom* button, or `Ctrl+MouseWheel`.
 
 ## Credits
 
