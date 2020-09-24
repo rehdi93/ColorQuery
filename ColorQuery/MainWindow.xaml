@@ -48,6 +48,7 @@
             </Style>
             <Style x:Key="toolbarBtn" TargetType="ButtonBase">
                 <Setter Property="Margin" Value="5,0"/>
+                <Setter Property="MaxHeight" Value="26"/>
                 <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
                 <Setter Property="FontSize" Value="15"/>
             </Style>
@@ -82,10 +83,10 @@
                 <ToggleButton Name="tbZoom" Style="{StaticResource toolbarBtn}">&#xE1A3;</ToggleButton>
                 <Button x:Name="miGoHome" Click="miGoHome_Click">&#xE1E4;</Button>
                 <Separator/>
-                <Button Click="miAbout_Click" ToolTip="{r:I18n About}" Height="25">
+                <Button Click="miAbout_Click" ToolTip="{r:I18n About}">
                     <Viewbox>
                         <Border BorderThickness="6" BorderBrush="Black" Width="100" Height="100" CornerRadius="100">
-                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Times New Roman" TextAlignment="Center" HorizontalAlignment="Center">i</TextBlock>
+                            <TextBlock FontSize="70" VerticalAlignment="Center" FontFamily="Consolas,Times New Roman" TextAlignment="Center">i</TextBlock>
                         </Border>
                     </Viewbox>
                 </Button>
