@@ -26,8 +26,7 @@ namespace ColorQuery
         public ColorFormat Format
         {
             get => format;
-            set
-            {
+            set {
                 if (SetProperty(ref format, value))
                 {
                     OnPropertyChanged(nameof(UiText));
@@ -52,27 +51,29 @@ namespace ColorQuery
                 case ColorFormat.RGB:
                     return $"{color.R} {color.G} {color.B}";
                 case ColorFormat.CMYK:
-                    var cmyk = new Cmyk(color);
-                    return cmyk.ToString();
+                    return new Cmyk(color).ToString();
                 case ColorFormat.HEX:
                     return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
                 default:
                     return null;
             }
-
         }
 
 
         void AddRecent(Color color)
         {
+            const int MAX = 10;
+
             var idx = History.IndexOf(color);
             if (idx == -1)
             {
                 History.Insert(0, color);
-                if (History.Count > 10)
-                {
-                    History.RemoveAt(10);
-                }
+                if (History.Count > MAX)
+                    History.RemoveAt(MAX);
+            }
+            else
+            {
+                History.Move(idx, 0);
             }
         }
 
