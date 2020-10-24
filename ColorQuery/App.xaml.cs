@@ -16,29 +16,58 @@ namespace ColorQuery
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            LangOverride();
+            LangOverride(e.Args);
             base.OnStartup(e);
         }
 
-        void LangOverride()
+        void LangOverride(string[] args)
         {
-            var envvarsUI = new[] { "LC_ALL", "LC_CTYPE", "LANG" };
+            string lang;
+            CultureInfo culture = null;
 
-            try
+            // via cmdline
+            // cmd> ColorQuery lang=pt-br
+            foreach (var arg in args)
             {
-                var lang = envvarsUI.Select(Env.GetEnvironmentVariable).First(v => v != null);
-                var culture = new CultureInfo(StripEnc(lang));
-                CultureInfo.CurrentUICulture = culture;
-                
+                var sp = arg.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                (string key, string value) pair;
+
+                if (sp.Length < 2)
+                    continue;
+                else
+                    pair = (sp[0], sp[1]);
+
+                if (pair.key == "lang")
+                {
+                    lang = pair.value;
+                    culture = new CultureInfo(StripEnc(lang));
+                }
+            }
+
+            // or via env. variables
+            if (culture == null)
+            {
+                var envvars = new[] { "LC_ALL", "LC_CTYPE", "LANG" };
+
+                try
+                {
+                    lang = envvars.Select(Env.GetEnvironmentVariable).First(v => v != null);
+                    culture = new CultureInfo(StripEnc(lang));
+                }
+                catch (InvalidOperationException)
+                {
+                    // no lang override found
+                }
+                catch (CultureNotFoundException ex)
+                {
+                    Trace.WriteLine(ex.Message, nameof(LangOverride));
+                }
+            }
+
+            if (culture != null)
+            {
                 Trace.WriteLine($"using {culture} for the Ui.", nameof(LangOverride));
-            }
-            catch (InvalidOperationException)
-            {
-                // no lang override found
-            }
-            catch (CultureNotFoundException ex)
-            {
-                Trace.WriteLine(ex.Message, nameof(LangOverride));
+                CultureInfo.CurrentUICulture = culture;
             }
 
             // .net doesn't understand encoding suffix (pt_BR.uf8)
