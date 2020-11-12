@@ -9,6 +9,4 @@ Format=
 Options=
 Version=
 Recent colors=
-
-# text with formating
-mousepos_fmt=Mouse pos: {0:F0}
+Mouse pos=

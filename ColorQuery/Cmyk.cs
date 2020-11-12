@@ -104,6 +104,7 @@ namespace ColorQuery
 
         static float Clamp(float nValue) => Math.Min(MaxValue, Math.Max(MinValue, nValue));
 
+#pragma warning disable IDE0051 // unused private members
         private void Deconstruct(out float c, out float m, out float y, out float k)
         {
             c = this.c; m = this.m;

@@ -9,6 +9,4 @@ Format=Formato
 Options=Opções
 Version=Versão
 Recent colors=Cores recentes
-
-# text with formating
-mousepos_fmt=Pos. mouse: {0:F0}
+Mouse pos=Pos. mouse

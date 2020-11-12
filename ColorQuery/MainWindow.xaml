@@ -27,7 +27,7 @@
                 </MenuItem>
             </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Footer="Status..." Zoom="1.69" Format="HEX">
+            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Footer="Mouse pos: xxxx;yyyy" Zoom="1.69" Format="HEX">
                 <local:ColorQueryModel.History>
                     <Color>Red</Color>
                     <Color>Green</Color>
@@ -91,16 +91,16 @@
                 </Button>
             </ToolBar>
             <ToolBar BandIndex="1" ToolTip="{r:I18n Color}">
-                <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,0,0" 
+                <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,5,0" 
                            Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="{Binding Color}" />
                     </Rectangle.Fill>
                 </Rectangle>
-                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}"/>
                 <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{r:I18n Format}" SelectedValue="{Binding Format}" />
                 <ToggleButton x:Name="btnShowHistory" ToolTip="{r:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
+                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}" MinWidth="125"/>
             </ToolBar>
         </ToolBarTray>
 
@@ -139,8 +139,8 @@
 
 
         <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
-            <Image x:Name="preview" Stretch="UniformToFill" Cursor="Cross"
-                   MouseMove="preview_MouseMove" MouseLeave="preview_MouseMove" MouseDown="preview_MouseBtnClick" MouseWheel="preview_MouseWheel"
+            <Image x:Name="previewImg" Stretch="UniformToFill" Cursor="Cross"
+                   MouseMove="previewImg_MouseMove" MouseLeave="previewImg_MouseMove" MouseDown="previewImg_MouseBtnClick" MouseWheel="previewImg_MouseWheel"
                    ContextMenu="{StaticResource ctxmColorCopy}">
                 <Image.RenderTransform>
                     <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
@@ -151,9 +151,12 @@
         </ScrollViewer>
 
 
-        <StatusBar Grid.Row="2" FontSize="11">
+        <StatusBar Name="statusBar" Grid.Row="2">
+            <StatusBarItem MinWidth="125">
+                <TextBlock Text="{Binding Footer}" />
+            </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Name="statusTxt" Text="{Binding Footer}" />
+                <TextBlock x:Name="txtMessage" Text="{Binding Subtitle}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using MvvmHelpers;
@@ -41,7 +40,6 @@ namespace ColorQuery
             set { SetProperty(ref zoom, value); }
         }
 
-
         public string UiText => GetText(this.format);
 
         public string GetText(ColorFormat format)
@@ -76,6 +74,7 @@ namespace ColorQuery
                 History.Move(idx, 0);
             }
         }
+
 
         Color color;
         ColorFormat format;

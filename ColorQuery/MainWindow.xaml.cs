@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -7,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Gdi = System.Drawing;
-using ImgInterop = System.Windows.Interop.Imaging;
+using static System.Windows.Interop.Imaging;
 using static ColorQuery.Resources.I18n;
 
 
@@ -24,21 +25,22 @@ namespace ColorQuery
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
-            preview.Source = CaptureScreen();
+            previewImg.Source = CaptureScreen();
             ScrollHome();
 
             // set toolbar item tooltips
-            var items = tooltray.ToolBars.SelectMany(tb => tb.Items.OfType<ButtonBase>()).Where(b => b.Command is RoutedUICommand);
-            foreach (var btn in items)
+            var btnsWithCmds = tooltray.ToolBars.SelectMany(tb => tb.Items.OfType<ButtonBase>()).Where(b => b.Command is RoutedUICommand);
+            foreach (var btn in btnsWithCmds)
             {
                 var cmd = (RoutedUICommand)btn.Command;
                 btn.ToolTip = cmd.Text;
 
-                var g = cmd.InputGestures.OfType<KeyGesture>().FirstOrDefault();
-                if (g != null)
+                try
                 {
-                    btn.ToolTip += " (" + g.DisplayString + ")";
+                    var kg = cmd.InputGestures.OfType<KeyGesture>().First();
+                    btn.ToolTip += " (" + kg.DisplayString + ")";
                 }
+                catch (Exception) {}
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
@@ -83,11 +85,11 @@ namespace ColorQuery
 
             var hbitmap = bm.GetHbitmap();
             using var handle = new HBitmapHandle(hbitmap);
-            return ImgInterop.CreateBitmapSourceFromHBitmap(
-                hbitmap,
-                IntPtr.Zero,
-                new Int32Rect(0, 0, bm.Width, bm.Height),
-                BitmapSizeOptions.FromEmptyOptions());
+            return CreateBitmapSourceFromHBitmap(
+                    hbitmap,
+                    IntPtr.Zero,
+                    new Int32Rect(0, 0, bm.Width, bm.Height),
+                    BitmapSizeOptions.FromEmptyOptions());
         }
         BitmapSource CaptureScreen()
         {
@@ -119,31 +121,32 @@ namespace ColorQuery
             return (screen, dpi);
         }
 
-
         private void ScrollHome()
         {
-            var (r, dpi) = GetScreenInfo();
+            var (rect, dpi) = GetScreenInfo();
+            var (X, Y) = (rect.X * dpi.DpiScaleX, rect.Y * dpi.DpiScaleY);
+
             // displays to the left of main have negative coords
-            scrollview.ScrollToHorizontalOffset(Math.Abs(r.X * dpi.DpiScaleX));
-            scrollview.ScrollToVerticalOffset(Math.Abs(r.Y * dpi.DpiScaleY));
+            scrollview.ScrollToHorizontalOffset(Math.Abs(X));
+            scrollview.ScrollToVerticalOffset(Math.Abs(Y));
         }
 
 
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            var (screenRect, dpi) = GetScreenInfo();
+            var (rect, dpi) = GetScreenInfo();
 
             // hide window by moving it offscreen
             var bounds = RestoreBounds;
             Left = Top = int.MaxValue;
-            
-            preview.Source = CaptureScreen(screenRect, dpi);
+
+            previewImg.Source = CaptureScreen(rect, dpi);
 
             Left = bounds.Left;
             Top = bounds.Top;
         }
 
-        private void preview_MouseBtnClick(object sender, MouseButtonEventArgs e)
+        private void previewImg_MouseBtnClick(object sender, MouseButtonEventArgs e)
         {
             var image = (Image)sender;
 
@@ -151,30 +154,32 @@ namespace ColorQuery
             {
                 var pos = e.GetPosition(image);
                 model.Color = GetPixel((BitmapSource)image.Source, pos);
-                model.Footer = string.Format(translate("mousepos_fmt"), pos);
+                model.Footer = string.Format(translate("Mouse pos") + ": {0:F0}", pos);
             }
         }
-        private void preview_MouseMove(object sender, MouseEventArgs e)
+        private void previewImg_MouseMove(object sender, MouseEventArgs e)
         {
+            var format = translate("Mouse pos") + ": {0:F0}";
+
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Footer = string.Format(translate("mousepos_fmt"), "OB");
+                model.Footer = string.Format(format, "OB");
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
             {
                 var pos = e.GetPosition((Image)sender);
-                model.Footer = string.Format(translate("mousepos_fmt"), pos);
+                model.Footer = string.Format(format, pos);
                 lastMouseTimestamp = e.Timestamp;
             }
         }
-        private void preview_MouseWheel(object _, MouseWheelEventArgs e)
+        private void previewImg_MouseWheel(object _, MouseWheelEventArgs e)
         {
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
                 var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;
 
-                if (command.CanExecute(null, preview))
-                    command.Execute(smallZoomChange, preview);
+                if (command.CanExecute(null, previewImg))
+                    command.Execute(smallZoomChange, previewImg);
 
                 e.Handled = true;
             }
@@ -186,7 +191,10 @@ namespace ColorQuery
 
             var text = model.GetText(format);
             Clipboard.SetText(text);
-            model.Footer = translate("Color copied") + ": [" + text + "]";
+            
+            var msg = translate("Color copied") + ": [" + text + "]";
+            model.Footer = msg;
+
             e.Handled = true;
         }
 
@@ -242,5 +250,4 @@ namespace ColorQuery
             e.Handled = true;
         }
     }
-
 }
