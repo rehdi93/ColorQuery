@@ -11,7 +11,6 @@ using Gdi = System.Drawing;
 using static System.Windows.Interop.Imaging;
 using static ColorQuery.Resources.I18n;
 
-
 namespace ColorQuery
 {
     /// <summary>
@@ -25,7 +24,19 @@ namespace ColorQuery
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
-            previewImg.Source = CaptureScreen();
+            // HACK: SystemParameters.VirtualScreen* values aren't updated with dpi changes,
+            // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor
+            // 😢
+            // calculate the desktop area using the current dpi
+            var dpi = GetDpi();
+            desktopRect = new Rect {
+                X = SystemParameters.VirtualScreenLeft * dpi.DpiScaleX,
+                Y = SystemParameters.VirtualScreenTop * dpi.DpiScaleY,
+                Width = SystemParameters.VirtualScreenWidth * dpi.DpiScaleX,
+                Height = SystemParameters.VirtualScreenHeight * dpi.DpiScaleY
+            };
+            desktopDpi = dpi;
+            previewImg.Source = CaptureScreen(desktopRect);
             ScrollHome();
 
             // set toolbar item tooltips
@@ -56,6 +67,8 @@ namespace ColorQuery
         }
 
         int lastMouseTimestamp = 0;
+        Rect desktopRect;
+        DpiScale desktopDpi;
 
         double maxZoom { get => zoomSlider.Maximum; set => zoomSlider.Maximum = value; }
         double minZoom { get => zoomSlider.Minimum; set => zoomSlider.Minimum = value; }
@@ -63,25 +76,25 @@ namespace ColorQuery
         double bigZoomChange { get => zoomSlider.LargeChange; set => zoomSlider.LargeChange = value; }
 
 
-        BitmapSource CaptureScreen(Rect area, DpiScale dpi)
+        BitmapSource CaptureScreen(Rect physicalArea)
         {
+            System.Diagnostics.Debug.Print($"CQ: Screenshot {physicalArea}");
+            
             var screenRect = new Int32Rect(
-                (int)(area.X * dpi.DpiScaleX),
-                (int)(area.Y * dpi.DpiScaleY),
-                (int)(area.Width * dpi.DpiScaleX),
-                (int)(area.Height * dpi.DpiScaleY)
+                (int)(physicalArea.X),
+                (int)(physicalArea.Y),
+                (int)(physicalArea.Width),
+                (int)(physicalArea.Height)
             );
 
             using var bm = new Gdi.Bitmap(screenRect.Width, screenRect.Height);
-            bm.SetResolution(96f, 96f);
-
             using var g = Gdi.Graphics.FromImage(bm);
 
             g.SmoothingMode = Gdi.Drawing2D.SmoothingMode.HighQuality;
             g.InterpolationMode = Gdi.Drawing2D.InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = Gdi.Drawing2D.PixelOffsetMode.HighQuality;
 
-            g.CopyFromScreen(screenRect.X, screenRect.Y, 0, 0, bm.Size);
+            g.CopyFromScreen(screenRect.X, screenRect.Y, 0, 0, bm.Size, Gdi.CopyPixelOperation.SourceCopy);
 
             var hbitmap = bm.GetHbitmap();
             using var handle = new HBitmapHandle(hbitmap);
@@ -90,11 +103,6 @@ namespace ColorQuery
                     IntPtr.Zero,
                     new Int32Rect(0, 0, bm.Width, bm.Height),
                     BitmapSizeOptions.FromEmptyOptions());
-        }
-        BitmapSource CaptureScreen()
-        {
-            var (rect, dpi) = GetScreenInfo();
-            return CaptureScreen(rect, dpi);
         }
 
         // https://stackoverflow.com/a/14508110
@@ -107,24 +115,19 @@ namespace ColorQuery
         }
 
         DpiScale GetDpi() => VisualTreeHelper.GetDpi(this);
-
-        (Rect,DpiScale) GetScreenInfo()
+        Rect GetScreen(DpiScale dpi)
         {
-            var screen = new Rect(
-                SystemParameters.VirtualScreenLeft,
-                SystemParameters.VirtualScreenTop,
-                SystemParameters.VirtualScreenWidth,
-                SystemParameters.VirtualScreenHeight
+            return new Rect(
+                SystemParameters.VirtualScreenLeft * dpi.DpiScaleX,
+                SystemParameters.VirtualScreenTop * dpi.DpiScaleY,
+                SystemParameters.VirtualScreenWidth * dpi.DpiScaleX,
+                SystemParameters.VirtualScreenHeight * dpi.DpiScaleY
             );
-            var dpi = GetDpi();
-
-            return (screen, dpi);
         }
 
         private void ScrollHome()
         {
-            var (rect, dpi) = GetScreenInfo();
-            var (X, Y) = (rect.X * dpi.DpiScaleX, rect.Y * dpi.DpiScaleY);
+            var (X, Y) = (desktopRect.X, desktopRect.Y);
 
             // displays to the left of main have negative coords
             scrollview.ScrollToHorizontalOffset(Math.Abs(X));
@@ -134,13 +137,11 @@ namespace ColorQuery
 
         private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
         {
-            var (rect, dpi) = GetScreenInfo();
-
             // hide window by moving it offscreen
             var bounds = RestoreBounds;
             Left = Top = int.MaxValue;
 
-            previewImg.Source = CaptureScreen(rect, dpi);
+            previewImg.Source = CaptureScreen(desktopRect);
 
             Left = bounds.Left;
             Top = bounds.Top;
