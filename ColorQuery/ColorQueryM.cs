@@ -40,7 +40,23 @@ namespace ColorQuery
             set { SetProperty(ref zoom, value); }
         }
 
-        public string UiText => GetText(this.format);
+        public string UiText
+        {
+            get {
+                switch (format)
+                {
+                    case ColorFormat.RGB:
+                        return $"R={color.R}; G={color.G}; B={color.B}";
+                    case ColorFormat.HEX:
+                        return color.ToString();
+                    case ColorFormat.CMYK:
+                        var (c,m,y,k) = toCMYK(color);
+                        return $"C={c:F3}; M={m:F3}; Y={y:F3}; K={k:F3}";
+                    default:
+                        return "???";
+                }
+            }
+        }
 
         public string GetText(ColorFormat format)
         {
@@ -49,9 +65,10 @@ namespace ColorQuery
                 case ColorFormat.RGB:
                     return $"{color.R} {color.G} {color.B}";
                 case ColorFormat.CMYK:
-                    return new Cmyk(color).ToString();
+                    var (c, m, y, k) = toCMYK(color);
+                    return $"{c:F3} {m:F3} {y:F3} {k:F3}";
                 case ColorFormat.HEX:
-                    return $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+                    return color.ToString();
                 default:
                     return null;
             }
@@ -73,6 +90,28 @@ namespace ColorQuery
             {
                 History.Move(idx, 0);
             }
+        }
+
+        static (float c, float m, float y, float k)
+        toCMYK(Color c)
+        {
+            if (c == Colors.Black)
+            {
+                return (0, 0, 0, 0);
+            }
+
+            var r = c.R / 255f;
+            var g = c.G / 255f;
+            var b = c.B / 255f;
+
+            var k = 1 - Math.Max(r, Math.Max(g, b));
+
+            return (
+                (1 - r - k) / (1 - k),
+                (1 - g - k) / (1 - k),
+                (1 - b - k) / (1 - k),
+                k
+            );
         }
 
 
