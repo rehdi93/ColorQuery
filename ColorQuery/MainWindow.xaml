@@ -137,19 +137,16 @@
             </StackPanel>
         </Popup>
 
-
-        <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both">
-            <Image x:Name="previewImg" Stretch="UniformToFill" Cursor="Cross"
+        <ScrollViewer Name="scrollview" Margin="5" Grid.Row="1" HorizontalScrollBarVisibility="Visible" PanningMode="Both" 
+                      ScrollChanged="scrollview_ScrollChanged">
+            <Image x:Name="previewImg" Stretch="UniformToFill" Cursor="Cross" ClipToBounds="True"
                    MouseMove="previewImg_MouseMove" MouseLeave="previewImg_MouseMove" MouseDown="previewImg_MouseBtnClick" MouseWheel="previewImg_MouseWheel"
                    ContextMenu="{StaticResource ctxmColorCopy}">
-                <Image.RenderTransform>
-                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"
-                                    CenterX="{Binding HorizontalOffset,ElementName=scrollview}"
-                                    CenterY="{Binding VerticalOffset,ElementName=scrollview}"/>
-                </Image.RenderTransform>
+                <Image.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding Zoom}" ScaleY="{Binding Zoom}"/>
+                </Image.LayoutTransform>
             </Image>
         </ScrollViewer>
-
 
         <StatusBar Name="statusBar" Grid.Row="2">
             <StatusBarItem MinWidth="125">

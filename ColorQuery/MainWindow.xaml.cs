@@ -21,6 +21,8 @@ namespace ColorQuery
         public MainWindow()
         {
             InitializeComponent();
+            Resources.Remove("mockModel");
+            
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
@@ -62,13 +64,12 @@ namespace ColorQuery
 
             // enum as itemsource: https://stackoverflow.com/a/6145957
             cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat));
-
-            Resources.Remove("mockModel");
         }
 
         int lastMouseTimestamp = 0;
         Rect desktopRect;
         DpiScale desktopDpi;
+        Point lastClickPt = new Point();
 
         double maxZoom { get => zoomSlider.Maximum; set => zoomSlider.Maximum = value; }
         double minZoom { get => zoomSlider.Minimum; set => zoomSlider.Minimum = value; }
@@ -81,10 +82,10 @@ namespace ColorQuery
             System.Diagnostics.Debug.Print($"CQ: Screenshot {physicalArea}");
             
             var screenRect = new Int32Rect(
-                (int)(physicalArea.X),
-                (int)(physicalArea.Y),
-                (int)(physicalArea.Width),
-                (int)(physicalArea.Height)
+                (int)physicalArea.X,
+                (int)physicalArea.Y,
+                (int)physicalArea.Width,
+                (int)physicalArea.Height
             );
 
             using var bm = new Gdi.Bitmap(screenRect.Width, screenRect.Height);
@@ -156,6 +157,8 @@ namespace ColorQuery
                 var pos = e.GetPosition(image);
                 model.Color = GetPixel((BitmapSource)image.Source, pos);
                 model.Footer = string.Format(translate("Mouse pos") + ": {0:F0}", pos);
+
+                lastClickPt = e.GetPosition(scrollview);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
@@ -180,7 +183,9 @@ namespace ColorQuery
                 var command = e.Delta > 0 ? NavigationCommands.IncreaseZoom : NavigationCommands.DecreaseZoom;
 
                 if (command.CanExecute(null, previewImg))
+                {
                     command.Execute(smallZoomChange, previewImg);
+                }
 
                 e.Handled = true;
             }
@@ -210,6 +215,10 @@ namespace ColorQuery
             else if (e.Command == NavigationCommands.DecreaseZoom)
             {
                 model.Zoom -= amount;
+            }
+            else if (e.Command == NavigationCommands.Zoom)
+            {
+                model.Zoom = (double)e.Parameter;
             }
         }
         private void ZoomCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
@@ -249,6 +258,33 @@ namespace ColorQuery
             }
 
             e.Handled = true;
+        }
+
+        private void scrollview_ScrollChanged(object _, ScrollChangedEventArgs e)
+        {
+            var oldSize = new Size(e.ExtentWidth - e.ExtentWidthChange, e.ExtentHeight - e.ExtentHeightChange);
+            e.Handled = oldSize == new Size() || (e.ExtentWidthChange == 0 && e.ExtentHeightChange == 0);
+
+            if (e.Handled)
+                return;
+
+            Point mpos;
+
+            if (previewImg.IsMouseDirectlyOver)
+                mpos = Mouse.GetPosition(scrollview);
+            else
+                mpos = lastClickPt;
+
+            System.Diagnostics.Debug.Print("mouse over={0}; mpos = {1:F2}", previewImg.IsMouseDirectlyOver, mpos);
+
+            var offset = new Point(e.HorizontalOffset + mpos.X, e.VerticalOffset + mpos.Y);
+            var relpos = new Point(offset.X / oldSize.Width, offset.Y / oldSize.Height);
+
+            offset.X = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);
+            offset.Y = Math.Max(relpos.Y * e.ExtentHeight - mpos.Y, 0);
+
+            scrollview.ScrollToHorizontalOffset(offset.X);
+            scrollview.ScrollToVerticalOffset(offset.Y);
         }
     }
 }
