@@ -30,7 +30,7 @@ namespace ColorQuery
             // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor
             // 😢
             // calculate the desktop area using the current dpi
-            var dpi = GetDpi();
+            var dpi = VisualTreeHelper.GetDpi(this);
             desktopRect = new Rect {
                 X = SystemParameters.VirtualScreenLeft * dpi.DpiScaleX,
                 Y = SystemParameters.VirtualScreenTop * dpi.DpiScaleY,
@@ -113,17 +113,6 @@ namespace ColorQuery
             var pixelbuff = new byte[4]; // { blue, green, red, alpha }
             crop.CopyPixels(pixelbuff, 4, 0);
             return Color.FromRgb(pixelbuff[2], pixelbuff[1], pixelbuff[0]);
-        }
-
-        DpiScale GetDpi() => VisualTreeHelper.GetDpi(this);
-        Rect GetScreen(DpiScale dpi)
-        {
-            return new Rect(
-                SystemParameters.VirtualScreenLeft * dpi.DpiScaleX,
-                SystemParameters.VirtualScreenTop * dpi.DpiScaleY,
-                SystemParameters.VirtualScreenWidth * dpi.DpiScaleX,
-                SystemParameters.VirtualScreenHeight * dpi.DpiScaleY
-            );
         }
 
         private void ScrollHome()
@@ -262,6 +251,7 @@ namespace ColorQuery
 
         private void scrollview_ScrollChanged(object _, ScrollChangedEventArgs e)
         {
+            // keep scroll position relative to mouse
             var oldSize = new Size(e.ExtentWidth - e.ExtentWidthChange, e.ExtentHeight - e.ExtentHeightChange);
             e.Handled = oldSize == new Size() || (e.ExtentWidthChange == 0 && e.ExtentHeightChange == 0);
 
@@ -271,11 +261,12 @@ namespace ColorQuery
             Point mpos;
 
             if (previewImg.IsMouseDirectlyOver)
+            {
                 mpos = Mouse.GetPosition(scrollview);
+                lastClickPt = mpos;
+            }
             else
                 mpos = lastClickPt;
-
-            System.Diagnostics.Debug.Print("mouse over={0}; mpos = {1:F2}", previewImg.IsMouseDirectlyOver, mpos);
 
             var offset = new Point(e.HorizontalOffset + mpos.X, e.VerticalOffset + mpos.Y);
             var relpos = new Point(offset.X / oldSize.Width, offset.Y / oldSize.Height);
