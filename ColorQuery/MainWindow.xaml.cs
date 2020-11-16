@@ -27,8 +27,7 @@ namespace ColorQuery
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
             // HACK: SystemParameters.VirtualScreen* values aren't updated with dpi changes,
-            // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor
-            // 😢
+            // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor 😢
             // calculate the desktop area using the current dpi
             var dpi = VisualTreeHelper.GetDpi(this);
             desktopRect = new Rect {
@@ -147,7 +146,8 @@ namespace ColorQuery
                 model.Color = GetPixel((BitmapSource)image.Source, pos);
                 model.Footer = string.Format(translate("Mouse pos") + ": {0:F0}", pos);
 
-                lastClickPt = e.GetPosition(scrollview);
+                // save in scrollview coords
+                lastClickPt = e.GetPosition((Control)image.Parent);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
@@ -158,7 +158,7 @@ namespace ColorQuery
             {
                 model.Footer = string.Format(format, "OB");
             }
-            else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp >= 100)
+            else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp > 100)
             {
                 var pos = e.GetPosition((Image)sender);
                 model.Footer = string.Format(format, pos);
@@ -249,7 +249,7 @@ namespace ColorQuery
             e.Handled = true;
         }
 
-        private void scrollview_ScrollChanged(object _, ScrollChangedEventArgs e)
+        private void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             // keep scroll position relative to mouse
             var oldSize = new Size(e.ExtentWidth - e.ExtentWidthChange, e.ExtentHeight - e.ExtentHeightChange);
@@ -258,11 +258,14 @@ namespace ColorQuery
             if (e.Handled)
                 return;
 
+            var sv = (ScrollViewer)sender;
+            var img = (Image)sv.Content;
+
             Point mpos;
 
-            if (previewImg.IsMouseDirectlyOver)
+            if (img.IsMouseDirectlyOver)
             {
-                mpos = Mouse.GetPosition(scrollview);
+                mpos = Mouse.GetPosition(sv);
                 lastClickPt = mpos;
             }
             else
@@ -274,8 +277,8 @@ namespace ColorQuery
             offset.X = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);
             offset.Y = Math.Max(relpos.Y * e.ExtentHeight - mpos.Y, 0);
 
-            scrollview.ScrollToHorizontalOffset(offset.X);
-            scrollview.ScrollToVerticalOffset(offset.Y);
+            sv.ScrollToHorizontalOffset(offset.X);
+            sv.ScrollToVerticalOffset(offset.Y);
         }
     }
 }

@@ -8,7 +8,6 @@ using MvvmHelpers;
 
 namespace ColorQuery
 {
-
     class ColorQueryModel : BaseViewModel
     {
         public Color Color
@@ -53,7 +52,7 @@ namespace ColorQuery
                         var (c,m,y,k) = toCMYK(color);
                         return $"C={c:F3}; M={m:F3}; Y={y:F3}; K={k:F3}";
                     default:
-                        return "???";
+                        return null;
                 }
             }
         }
@@ -119,6 +118,4 @@ namespace ColorQuery
         ColorFormat format;
         double zoom = 1;
     }
-
-
 }

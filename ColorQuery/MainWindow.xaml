@@ -42,10 +42,6 @@
                 </local:ColorQueryModel.History>
             </local:ColorQueryModel>
 
-            <Style x:Key="toolbarElement" TargetType="FrameworkElement">
-                <Setter Property="Margin" Value="5,0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
             <Style x:Key="toolbarBtn" TargetType="ButtonBase">
                 <Setter Property="Margin" Value="5,0"/>
                 <Setter Property="MaxHeight" Value="26"/>
@@ -91,8 +87,8 @@
                 </Button>
             </ToolBar>
             <ToolBar BandIndex="1" ToolTip="{r:I18n Color}">
-                <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,5,0" 
-                           Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}">
+                <Rectangle Width="20" Height="20" Stroke="Black" Margin="5,0,5,0" VerticalAlignment="Center"
+                           ContextMenu="{StaticResource ctxmColorCopy}">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="{Binding Color}" />
                     </Rectangle.Fill>
@@ -100,7 +96,7 @@
                 <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{r:I18n Format}" SelectedValue="{Binding Format}" />
                 <ToggleButton x:Name="btnShowHistory" ToolTip="{r:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
-                <TextBlock Text="{Binding UiText}" Style="{StaticResource toolbarElement}" ContextMenu="{StaticResource ctxmColorCopy}" MinWidth="200"/>
+                <TextBlock Text="{Binding UiText}" VerticalAlignment="Center" ContextMenu="{StaticResource ctxmColorCopy}" MinWidth="200"/>
             </ToolBar>
         </ToolBarTray>
 
@@ -153,7 +149,7 @@
                 <TextBlock Text="{Binding Footer}" />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock x:Name="txtMessage" Text="{Binding Subtitle}"/>
+                <TextBlock Text="{Binding Subtitle}"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
