@@ -19,11 +19,11 @@ namespace ColorQuery
 
             var assembly = Assembly.GetExecutingAssembly();
             var attributes = assembly.GetCustomAttributes();
-            var aname = assembly.GetName();
+            var assbname = assembly.GetName();
 
-            Title = translate("About") + " " + aname.Name;
+            Title = translate("About") + " " + assbname.Name;
             txtProductName.Text = attributes.OfType<AssemblyProductAttribute>().FirstOrDefault()?.Product;
-            txtVersion.Text = aname.Version.ToString();
+            txtVersion.Text = assbname.Version.ToString();
             txtCopyright.Text = attributes.OfType<AssemblyCopyrightAttribute>().FirstOrDefault()?.Copyright;
 
             btnOk.Click += delegate { Close(); };

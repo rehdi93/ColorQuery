@@ -22,7 +22,7 @@ namespace ColorQuery
         {
             InitializeComponent();
             Resources.Remove("mockModel");
-            
+
             NavigationCommands.IncreaseZoom.InputGestures.Add(new KeyGesture(Key.OemPlus, ModifierKeys.Control, "Ctrl++"));
             NavigationCommands.DecreaseZoom.InputGestures.Add(new KeyGesture(Key.OemMinus, ModifierKeys.Control, "Ctrl+-"));
 
@@ -61,14 +61,13 @@ namespace ColorQuery
             var ctxm = (ContextMenu)Resources["ctxmColorCopy"];
             ctxm.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, CopyCmd_Exec));
 
-            // enum as itemsource: https://stackoverflow.com/a/6145957
             cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat));
         }
 
         int lastMouseTimestamp = 0;
         Rect desktopRect;
         DpiScale desktopDpi;
-        Point lastClickPt = new Point();
+        Point lastClickPos = new Point(); // relative to scrollview
 
         double maxZoom { get => zoomSlider.Maximum; set => zoomSlider.Maximum = value; }
         double minZoom { get => zoomSlider.Minimum; set => zoomSlider.Minimum = value; }
@@ -105,8 +104,7 @@ namespace ColorQuery
                     BitmapSizeOptions.FromEmptyOptions());
         }
 
-        // https://stackoverflow.com/a/14508110
-        Color GetPixel(BitmapSource image, Point p)
+        Color GetPixelColor(BitmapSource image, Point p)
         {
             var crop = new CroppedBitmap(image, new Int32Rect((int)p.X, (int)p.Y, 1, 1));
             var pixelbuff = new byte[4]; // { blue, green, red, alpha }
@@ -143,25 +141,24 @@ namespace ColorQuery
             if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
             {
                 var pos = e.GetPosition(image);
-                model.Color = GetPixel((BitmapSource)image.Source, pos);
-                model.Footer = string.Format(translate("Mouse pos") + ": {0:F0}", pos);
+                model.Color = GetPixelColor((BitmapSource)image.Source, pos);
+                model.Position = pos;
 
-                // save in scrollview coords
-                lastClickPt = e.GetPosition((Control)image.Parent);
+                lastClickPos = e.GetPosition((Control)image.Parent);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
         {
-            var format = translate("Mouse pos") + ": {0:F0}";
-
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                model.Footer = string.Format(format, "OB");
+                var offset = new Vector(scrollview.HorizontalOffset, scrollview.VerticalOffset);
+                var pos = lastClickPos + offset;
+                model.Position = pos;
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp > 100)
             {
-                var pos = e.GetPosition((Image)sender);
-                model.Footer = string.Format(format, pos);
+                var pos = e.GetPosition(previewImg);
+                model.Position = pos;
                 lastMouseTimestamp = e.Timestamp;
             }
         }
@@ -187,8 +184,8 @@ namespace ColorQuery
             var text = model.GetText(format);
             Clipboard.SetText(text);
             
-            var msg = translate("Color copied") + ": [" + text + "]";
-            model.Footer = msg;
+            model.Footer = translate("Color copied") + "!";
+            Task.Delay(2000).ContinueWith(t => model.Footer = "");
 
             e.Handled = true;
         }
@@ -266,12 +263,13 @@ namespace ColorQuery
             if (img.IsMouseDirectlyOver)
             {
                 mpos = Mouse.GetPosition(sv);
-                lastClickPt = mpos;
+                lastClickPos = mpos;
             }
             else
-                mpos = lastClickPt;
+                mpos = lastClickPos;
 
-            var offset = new Point(e.HorizontalOffset + mpos.X, e.VerticalOffset + mpos.Y);
+            var scroll = new Vector(e.HorizontalOffset, e.VerticalOffset);
+            var offset = mpos + scroll;
             var relpos = new Point(offset.X / oldSize.Width, offset.Y / oldSize.Height);
 
             offset.X = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);

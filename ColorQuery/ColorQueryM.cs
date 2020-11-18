@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using MvvmHelpers;
-
+using System.Windows;
 
 namespace ColorQuery
 {
@@ -31,6 +31,13 @@ namespace ColorQuery
                 }
             }
         }
+        public Point Position
+        {
+            get { return colorPos; }
+            set { SetProperty(ref colorPos, value); }
+        }
+
+
         public ObservableCollection<Color> History { get; } = new ObservableCollection<Color>();
 
         public double Zoom
@@ -39,33 +46,20 @@ namespace ColorQuery
             set { SetProperty(ref zoom, value); }
         }
 
-        public string UiText
-        {
-            get {
-                switch (format)
-                {
-                    case ColorFormat.RGB:
-                        return $"R={color.R}; G={color.G}; B={color.B}";
-                    case ColorFormat.HEX:
-                        return color.ToString();
-                    case ColorFormat.CMYK:
-                        var (c,m,y,k) = toCMYK(color);
-                        return $"C={c:F3}; M={m:F3}; Y={y:F3}; K={k:F3}";
-                    default:
-                        return null;
-                }
-            }
-        }
+        public string UiText => GetText(this.format, true);
 
-        public string GetText(ColorFormat format)
+
+        public string GetText(ColorFormat format, bool ui = false)
         {
             switch (format)
             {
                 case ColorFormat.RGB:
-                    return $"{color.R} {color.G} {color.B}";
+                    return ui ? $"R={color.R} G={color.G} B={color.B}" 
+                                : $"{color.R} {color.G} {color.B}";
                 case ColorFormat.CMYK:
                     var (c, m, y, k) = toCMYK(color);
-                    return $"{c:F3} {m:F3} {y:F3} {k:F3}";
+                    return ui ? $"C={c:F3} M={m:F3} Y={y:F3} K={k:F3}" 
+                                : $"{c:F3} {m:F3} {y:F3} {k:F3}";
                 case ColorFormat.HEX:
                     return color.ToString();
                 default:
@@ -117,5 +111,6 @@ namespace ColorQuery
         Color color;
         ColorFormat format;
         double zoom = 1;
+        Point colorPos;
     }
 }
