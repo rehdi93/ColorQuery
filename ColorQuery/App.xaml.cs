@@ -24,12 +24,13 @@ namespace ColorQuery
         {
             string lang;
             CultureInfo culture = null;
+            var sep = new[] { '=' };
 
             // via cmdline
             // cmd> ColorQuery lang=pt-br
             foreach (var arg in args)
             {
-                var sp = arg.Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var sp = arg.Split(sep, 2, StringSplitOptions.RemoveEmptyEntries);
                 (string key, string value) pair;
 
                 if (sp.Length < 2)
@@ -47,16 +48,14 @@ namespace ColorQuery
             // or via env. variables
             if (culture == null)
             {
-                var envvars = new[] { "LC_ALL", "LC_CTYPE", "LANG" };
-
                 try
                 {
-                    lang = envvars.Select(Env.GetEnvironmentVariable).First(v => v != null);
+                    lang = new[] { "LC_ALL", "LC_CTYPE", "LANG" }.Select(Env.GetEnvironmentVariable).First(v => v != null);
                     culture = new CultureInfo(StripEnc(lang));
                 }
                 catch (InvalidOperationException)
                 {
-                    // no lang override found
+                    Debug.WriteLine("No environment override found.", nameof(LangOverride));
                 }
                 catch (CultureNotFoundException ex)
                 {
@@ -75,8 +74,9 @@ namespace ColorQuery
             {
                 var dot = l.LastIndexOf('.');
                 if (dot != -1)
-                    l = l.Substring(0, dot);
-                return l;
+                    return l.Substring(0, dot);
+                else
+                    return l;
             }
         }
     }

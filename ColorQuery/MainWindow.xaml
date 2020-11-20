@@ -93,7 +93,7 @@
                         <SolidColorBrush Color="{Binding Color}" />
                     </Rectangle.Fill>
                 </Rectangle>
-                <ComboBox Name="cbFormatSelect" Width="50" ToolTip="{r:I18n Format}" SelectedValue="{Binding Format}" />
+                <ComboBox Name="cbFormatSelect" Width="75" ToolTip="{r:I18n Format}" SelectedValue="{Binding Format}" />
                 <ToggleButton x:Name="btnShowHistory" ToolTip="{r:I18n 'Recent colors'}" Style="{StaticResource toolbarBtn}"
                               IsEnabled="{Binding HasItems, ElementName=histList}">&#x1f553;</ToggleButton>
             </ToolBar>
@@ -109,13 +109,13 @@
             </StackPanel>
         </Popup>
 
-        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True" 
+        <Popup Name="histPopup" StaysOpen="False" AllowsTransparency="True"
                IsOpen="{Binding IsChecked,ElementName=btnShowHistory}" PlacementTarget="{Binding ElementName=btnShowHistory}">
             <StackPanel Background="White" Margin="3">
-                <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" SelectionChanged="histList_SelectionChanged" BorderBrush="{x:Null}">
+                <ListView Name="histList" ItemsSource="{Binding History}" SelectionMode="Single" BorderBrush="{x:Null}" SelectionChanged="histList_SelectionChanged">
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel MaxWidth="150" MaxHeight="120"/>
+                            <WrapPanel MaxWidth="150" MaxHeight="150" />
                         </ItemsPanelTemplate>
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
@@ -146,17 +146,17 @@
         <StatusBar Grid.Row="2">
             <StatusBarItem MinWidth="125">
                 <TextBlock>
-                    <Underline><Run Text="{r:I18n 'Mouse pos'}"/>:</Underline>
+                    <Underline><Run Text="{r:I18n 'Position'}"/>:</Underline>
                     <Run Text="{Binding Position,StringFormat=\{0:F0\}}" FontFamily="Consolas" FontSize="11" />
                 </TextBlock>
             </StatusBarItem>
-            <StatusBarItem>
+            <StatusBarItem Margin="5,0,0,0">
                 <TextBlock>
                     <Underline><Run Text="{r:I18n 'Color'}" />:</Underline>
                     <Run Text="{Binding UiText,Mode=OneWay}" FontFamily="Consolas" FontSize="11" />
                 </TextBlock>
             </StatusBarItem>
-            <StatusBarItem Margin="10,0,0,0">
+            <StatusBarItem Margin="5,0,0,0">
                 <TextBlock Text="{Binding Footer}" />
             </StatusBarItem>
         </StatusBar>

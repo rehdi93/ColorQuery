@@ -172,8 +172,6 @@ namespace ColorQuery
                 {
                     command.Execute(smallZoomChange, previewImg);
                 }
-
-                e.Handled = true;
             }
         }
 
@@ -186,8 +184,6 @@ namespace ColorQuery
             
             model.Footer = translate("Color copied") + "!";
             Task.Delay(2000).ContinueWith(t => model.Footer = "");
-
-            e.Handled = true;
         }
 
         private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
@@ -231,7 +227,6 @@ namespace ColorQuery
         {
             histPopup.IsOpen = false;
             model.History.Clear();
-            e.Handled = true;
         }
 
         private void histList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -242,8 +237,6 @@ namespace ColorQuery
                 var color = (Color)list.SelectedItem;
                 model.Color = color;
             }
-
-            e.Handled = true;
         }
 
         private void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
