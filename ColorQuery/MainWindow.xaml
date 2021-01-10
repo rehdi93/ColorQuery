@@ -9,47 +9,45 @@
         Title="Color Query" Width="800" Height="600" ResizeMode="CanResizeWithGrip">
 
     <Window.Resources>
-        <ResourceDictionary>
-            <ContextMenu x:Key="ctxmColorCopy">
-                <MenuItem Header="{r:I18n 'Copy color'}" Command="Copy">
-                    <MenuItem.Icon>
-                        <Rectangle Stroke="Black">
-                            <Rectangle.Fill>
-                                <SolidColorBrush Color="{Binding Color}" />
-                            </Rectangle.Fill>
-                        </Rectangle>
-                    </MenuItem.Icon>
-                </MenuItem>
-                <MenuItem Header="{r:I18n 'Copy color as'}">
-                    <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
-                    <MenuItem Header="HEX"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
-                    <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
-                </MenuItem>
-            </ContextMenu>
+        <ContextMenu x:Key="ctxmColorCopy">
+            <MenuItem Header="{r:I18n 'Copy color'}" Command="Copy">
+                <MenuItem.Icon>
+                    <Rectangle Stroke="Black">
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="{Binding Color}" />
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="{r:I18n 'Copy color as'}">
+                <MenuItem Header="RGB"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.RGB}"  InputGestureText=" "/>
+                <MenuItem Header="HEX"  Command="Copy" CommandParameter="{x:Static local:ColorFormat.HEX}"  InputGestureText=" "/>
+                <MenuItem Header="CMYK" Command="Copy" CommandParameter="{x:Static local:ColorFormat.CMYK}" InputGestureText=" "/>
+            </MenuItem>
+        </ContextMenu>
 
-            <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Zoom="1.69" Format="CMYK" Position="9999,9999">
-                <local:ColorQueryModel.History>
-                    <Color>Red</Color>
-                    <Color>Green</Color>
-                    <Color>Blue</Color>
-                    <Color>Cyan</Color>
-                    <Color>Magenta</Color>
-                    <Color>Yellow</Color>
-                    <Color>Red</Color>
-                    <Color>Green</Color>
-                    <Color>Blue</Color>
-                    <Color>Cyan</Color>
-                </local:ColorQueryModel.History>
-            </local:ColorQueryModel>
+        <local:ColorQueryModel x:Key="mockModel" Color="#FFE748D6" Zoom="1.69" Format="CMYK" Position="9999,9999">
+            <local:ColorQueryModel.History>
+                <Color>Red</Color>
+                <Color>Green</Color>
+                <Color>Blue</Color>
+                <Color>Cyan</Color>
+                <Color>Magenta</Color>
+                <Color>Yellow</Color>
+                <Color>Red</Color>
+                <Color>Green</Color>
+                <Color>Blue</Color>
+                <Color>Cyan</Color>
+            </local:ColorQueryModel.History>
+        </local:ColorQueryModel>
 
-            <Style x:Key="toolbarBtn" TargetType="ButtonBase">
-                <Setter Property="Margin" Value="5,0"/>
-                <Setter Property="MaxHeight" Value="26"/>
-                <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
-                <Setter Property="FontSize" Value="15"/>
-            </Style>
-            <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource toolbarBtn}" TargetType="Button"/>
-        </ResourceDictionary>
+        <Style x:Key="toolbarBtn" TargetType="ButtonBase">
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="MaxHeight" Value="26"/>
+            <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+            <Setter Property="FontSize" Value="15"/>
+        </Style>
+        <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" BasedOn="{StaticResource toolbarBtn}" TargetType="Button"/>
     </Window.Resources>
 
     <Window.DataContext>

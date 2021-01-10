@@ -18,7 +18,7 @@ namespace ColorQuery.Resources
             }
             catch (Exception e)
             {
-                Debug.WriteLine("translate(\"{0}\") error: {1}", text, e.Message);
+                Debug.Print("translate(\"{0}\") error: {1}", text, e.Message);
                 return text;
             }
         }

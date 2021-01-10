@@ -144,7 +144,7 @@ namespace ColorQuery
                 model.Color = GetPixelColor((BitmapSource)image.Source, pos);
                 model.Position = pos;
 
-                lastClickPos = e.GetPosition((Control)image.Parent);
+                lastClickPos = e.GetPosition((ScrollViewer)image.Parent);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
@@ -172,6 +172,8 @@ namespace ColorQuery
                 {
                     command.Execute(smallZoomChange, previewImg);
                 }
+
+                e.Handled = true;
             }
         }
 
@@ -241,7 +243,7 @@ namespace ColorQuery
 
         private void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // keep scroll position relative to mouse
+            // keep scroll position relative to last mouse click pos.
             var oldSize = new Size(e.ExtentWidth - e.ExtentWidthChange, e.ExtentHeight - e.ExtentHeightChange);
             e.Handled = oldSize == new Size() || (e.ExtentWidthChange == 0 && e.ExtentHeightChange == 0);
 
@@ -249,21 +251,17 @@ namespace ColorQuery
                 return;
 
             var sv = (ScrollViewer)sender;
-            var img = (Image)sv.Content;
+            var content = (Image)sv.Content;
 
-            Point mpos;
-
-            if (img.IsMouseDirectlyOver)
+            if (content.IsMouseDirectlyOver)
             {
-                mpos = Mouse.GetPosition(sv);
-                lastClickPos = mpos;
+                lastClickPos = Mouse.GetPosition(sv);
             }
-            else
-                mpos = lastClickPos;
 
-            var scroll = new Vector(e.HorizontalOffset, e.VerticalOffset);
-            var offset = mpos + scroll;
-            var relpos = new Point(offset.X / oldSize.Width, offset.Y / oldSize.Height);
+            Point mpos = lastClickPos;
+
+            var offset = new Vector(e.HorizontalOffset, e.VerticalOffset) + mpos;
+            var relpos = new Vector(offset.X / oldSize.Width, offset.Y / oldSize.Height);
 
             offset.X = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);
             offset.Y = Math.Max(relpos.Y * e.ExtentHeight - mpos.Y, 0);
