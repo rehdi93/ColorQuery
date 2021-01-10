@@ -29,14 +29,20 @@ namespace ColorQuery
             // HACK: SystemParameters.VirtualScreen* values aren't updated with dpi changes,
             // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor 😢
             // calculate the desktop area using the current dpi
-            var dpi = VisualTreeHelper.GetDpi(this);
-            desktopRect = new Rect {
-                X = SystemParameters.VirtualScreenLeft * dpi.DpiScaleX,
-                Y = SystemParameters.VirtualScreenTop * dpi.DpiScaleY,
-                Width = SystemParameters.VirtualScreenWidth * dpi.DpiScaleX,
-                Height = SystemParameters.VirtualScreenHeight * dpi.DpiScaleY
-            };
-            desktopDpi = dpi;
+            var screenRect = new Rect(
+                SystemParameters.VirtualScreenLeft,
+                SystemParameters.VirtualScreenTop,
+                SystemParameters.VirtualScreenWidth,
+                SystemParameters.VirtualScreenHeight
+            );
+            desktopRect = screenRect;
+
+            desktopDpi = VisualTreeHelper.GetDpi(this);
+            var dpiScale = new Vector(desktopDpi.DpiScaleX, desktopDpi.DpiScaleY);
+            
+            desktopRect.Scale(dpiScale.X, dpiScale.Y);
+            desktopRect.Offset(desktopRect.Left * dpiScale.X, desktopRect.Top * dpiScale.Y);
+
             previewImg.Source = CaptureScreen(desktopRect);
             ScrollHome();
 
@@ -47,12 +53,15 @@ namespace ColorQuery
                 var cmd = (RoutedUICommand)btn.Command;
                 btn.ToolTip = cmd.Text;
 
-                try
+                try 
                 {
                     var kg = cmd.InputGestures.OfType<KeyGesture>().First();
                     btn.ToolTip += " (" + kg.DisplayString + ")";
                 }
-                catch (Exception) {}
+                catch (Exception)
+                {
+                    System.Diagnostics.Debug.Print("toolbar: {0} has no KeyGestures.", cmd.Name);
+                }
             }
 
             miGoHome.ToolTip = ComponentCommands.MoveToHome.Text;
@@ -64,10 +73,10 @@ namespace ColorQuery
             cbFormatSelect.ItemsSource = Enum.GetValues(typeof(ColorFormat));
         }
 
-        int lastMouseTimestamp = 0;
         Rect desktopRect;
         DpiScale desktopDpi;
-        Point lastClickPos = new Point(); // relative to scrollview
+        Point zoomCenter = new Point(); // relative to scrollview
+        int lastMouseTimestamp = 0;
 
         double maxZoom { get => zoomSlider.Maximum; set => zoomSlider.Maximum = value; }
         double minZoom { get => zoomSlider.Minimum; set => zoomSlider.Minimum = value; }
@@ -77,7 +86,7 @@ namespace ColorQuery
 
         BitmapSource CaptureScreen(Rect physicalArea)
         {
-            System.Diagnostics.Debug.Print($"CQ: Screenshot {physicalArea}");
+            System.Diagnostics.Debug.Print($"CaptureScreen: {physicalArea}");
             
             var screenRect = new Int32Rect(
                 (int)physicalArea.X,
@@ -144,15 +153,14 @@ namespace ColorQuery
                 model.Color = GetPixelColor((BitmapSource)image.Source, pos);
                 model.Position = pos;
 
-                lastClickPos = e.GetPosition((ScrollViewer)image.Parent);
+                zoomCenter = e.GetPosition((ScrollViewer)image.Parent);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                var offset = new Vector(scrollview.HorizontalOffset, scrollview.VerticalOffset);
-                var pos = lastClickPos + offset;
+                var pos = zoomCenter + new Vector(scrollview.HorizontalOffset, scrollview.VerticalOffset);
                 model.Position = pos;
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp > 100)
@@ -255,10 +263,10 @@ namespace ColorQuery
 
             if (content.IsMouseDirectlyOver)
             {
-                lastClickPos = Mouse.GetPosition(sv);
+                zoomCenter = Mouse.GetPosition(sv);
             }
 
-            Point mpos = lastClickPos;
+            Point mpos = zoomCenter;
 
             var offset = new Vector(e.HorizontalOffset, e.VerticalOffset) + mpos;
             var relpos = new Vector(offset.X / oldSize.Width, offset.Y / oldSize.Height);
