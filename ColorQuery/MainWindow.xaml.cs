@@ -38,10 +38,7 @@ namespace ColorQuery
             desktopRect = screenRect;
 
             desktopDpi = VisualTreeHelper.GetDpi(this);
-            var dpiScale = new Vector(desktopDpi.DpiScaleX, desktopDpi.DpiScaleY);
-            
-            desktopRect.Scale(dpiScale.X, dpiScale.Y);
-            desktopRect.Offset(desktopRect.Left * dpiScale.X, desktopRect.Top * dpiScale.Y);
+            desktopRect.Scale(desktopDpi.DpiScaleX, desktopDpi.DpiScaleY);
 
             previewImg.Source = CaptureScreen(desktopRect);
             ScrollHome();
@@ -88,26 +85,25 @@ namespace ColorQuery
         {
             System.Diagnostics.Debug.Print($"CaptureScreen: {physicalArea}");
             
-            var screenRect = new Int32Rect(
+            var rect = new Int32Rect(
                 (int)physicalArea.X,
                 (int)physicalArea.Y,
                 (int)physicalArea.Width,
                 (int)physicalArea.Height
             );
 
-            using var bm = new Gdi.Bitmap(screenRect.Width, screenRect.Height);
+            using var bm = new Gdi.Bitmap(rect.Width, rect.Height);
             using var g = Gdi.Graphics.FromImage(bm);
 
             g.SmoothingMode = Gdi.Drawing2D.SmoothingMode.HighQuality;
             g.InterpolationMode = Gdi.Drawing2D.InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = Gdi.Drawing2D.PixelOffsetMode.HighQuality;
 
-            g.CopyFromScreen(screenRect.X, screenRect.Y, 0, 0, bm.Size, Gdi.CopyPixelOperation.SourceCopy);
+            g.CopyFromScreen(rect.X, rect.Y, 0, 0, bm.Size, Gdi.CopyPixelOperation.SourceCopy);
 
-            var hbitmap = bm.GetHbitmap();
-            using var handle = new HBitmapHandle(hbitmap);
+            using var handle = new HBitmapHandle(bm.GetHbitmap());
             return CreateBitmapSourceFromHBitmap(
-                    hbitmap,
+                    handle.Get(),
                     IntPtr.Zero,
                     new Int32Rect(0, 0, bm.Width, bm.Height),
                     BitmapSizeOptions.FromEmptyOptions());

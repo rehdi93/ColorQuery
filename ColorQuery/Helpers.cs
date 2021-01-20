@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Resources;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
 namespace ColorQuery
 {
-    enum ColorFormat { RGB, HEX, CMYK }
-
     class HBitmapHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         [System.Security.SecurityCritical]
@@ -14,6 +11,8 @@ namespace ColorQuery
         {
             SetHandle(handle);
         }
+
+        public IntPtr Get() => handle;
 
         protected override bool ReleaseHandle()
         {

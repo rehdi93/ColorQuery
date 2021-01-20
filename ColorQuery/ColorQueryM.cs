@@ -8,6 +8,8 @@ using System.Windows;
 
 namespace ColorQuery
 {
+    enum ColorFormat { RGB, HEX, CMYK }
+
     class ColorQueryModel : BaseViewModel
     {
         public Color Color
