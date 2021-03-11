@@ -174,6 +174,7 @@ namespace ColorQuery
 
                 if (command.CanExecute(null, previewImg))
                 {
+                    zoomCenter = e.GetPosition((ScrollViewer)previewImg.Parent);
                     command.Execute(smallZoomChange, previewImg);
                 }
 
@@ -247,31 +248,24 @@ namespace ColorQuery
 
         private void scrollview_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // keep scroll position relative to last mouse click pos.
+            // keep scroll position relative to zoomCenter.
             var oldSize = new Size(e.ExtentWidth - e.ExtentWidthChange, e.ExtentHeight - e.ExtentHeightChange);
             e.Handled = oldSize == new Size() || (e.ExtentWidthChange == 0 && e.ExtentHeightChange == 0);
 
             if (e.Handled)
                 return;
 
-            var sv = (ScrollViewer)sender;
-            var content = (Image)sv.Content;
-
-            if (content.IsMouseDirectlyOver)
-            {
-                zoomCenter = Mouse.GetPosition(sv);
-            }
-
             Point mpos = zoomCenter;
 
             var offset = new Vector(e.HorizontalOffset, e.VerticalOffset) + mpos;
             var relpos = new Vector(offset.X / oldSize.Width, offset.Y / oldSize.Height);
 
-            offset.X = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);
-            offset.Y = Math.Max(relpos.Y * e.ExtentHeight - mpos.Y, 0);
+            var H = Math.Max(relpos.X * e.ExtentWidth - mpos.X, 0);
+            var V = Math.Max(relpos.Y * e.ExtentHeight - mpos.Y, 0);
 
-            sv.ScrollToHorizontalOffset(offset.X);
-            sv.ScrollToVerticalOffset(offset.Y);
+            var sv = (ScrollViewer)sender;
+            sv.ScrollToHorizontalOffset(H);
+            sv.ScrollToVerticalOffset(V);
         }
     }
 }
