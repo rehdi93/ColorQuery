@@ -29,13 +29,12 @@ namespace ColorQuery
             // HACK: SystemParameters.VirtualScreen* values aren't updated with dpi changes,
             // 'physical_left == VirtualScreenLeft * dpiScale' ONLY if dpiScale is the dpiScale of the main monitor 😢
             // calculate the desktop area using the current dpi
-            var screenRect = new Rect(
+            desktopRect = new Rect(
                 SystemParameters.VirtualScreenLeft,
                 SystemParameters.VirtualScreenTop,
                 SystemParameters.VirtualScreenWidth,
                 SystemParameters.VirtualScreenHeight
             );
-            desktopRect = screenRect;
 
             desktopDpi = VisualTreeHelper.GetDpi(this);
             desktopRect.Scale(desktopDpi.DpiScaleX, desktopDpi.DpiScaleY);
@@ -119,11 +118,9 @@ namespace ColorQuery
 
         private void ScrollHome()
         {
-            var (X, Y) = (desktopRect.X, desktopRect.Y);
-
             // displays to the left of main have negative coords
-            scrollview.ScrollToHorizontalOffset(Math.Abs(X));
-            scrollview.ScrollToVerticalOffset(Math.Abs(Y));
+            scrollview.ScrollToHorizontalOffset(Math.Abs(desktopRect.X));
+            scrollview.ScrollToVerticalOffset(Math.Abs(desktopRect.Y));
         }
 
 
@@ -156,8 +153,7 @@ namespace ColorQuery
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
-                var pos = zoomCenter + new Vector(scrollview.HorizontalOffset, scrollview.VerticalOffset);
-                model.Position = pos;
+                model.Position = new Point();
             }
             else if (e.RoutedEvent == MouseMoveEvent && e.Timestamp - lastMouseTimestamp > 100)
             {
