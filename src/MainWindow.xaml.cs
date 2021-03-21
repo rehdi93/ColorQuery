@@ -124,7 +124,7 @@ namespace ColorQuery
         }
 
 
-        private void RefreshCmd_Executed(object _, ExecutedRoutedEventArgs __)
+        private void RefreshCmd_Executed(object _s, ExecutedRoutedEventArgs e)
         {
             // hide window by moving it offscreen
             var bounds = RestoreBounds;
@@ -136,20 +136,18 @@ namespace ColorQuery
             Top = bounds.Top;
         }
 
-        private void previewImg_MouseBtnClick(object sender, MouseButtonEventArgs e)
+        private void previewImg_MouseBtnClick(object _s, MouseButtonEventArgs e)
         {
-            var image = (Image)sender;
-
             if (e.ChangedButton == MouseButton.Left || e.ChangedButton == MouseButton.Right)
             {
-                var pos = e.GetPosition(image);
-                model.Color = GetPixelColor((BitmapSource)image.Source, pos);
+                var pos = e.GetPosition(previewImg);
+                model.Color = GetPixelColor((BitmapSource)previewImg.Source, pos);
                 model.Position = pos;
 
                 zoomCenter = e.GetPosition(scrollview);
             }
         }
-        private void previewImg_MouseMove(object sender, MouseEventArgs e)
+        private void previewImg_MouseMove(object _s, MouseEventArgs e)
         {
             if (e.RoutedEvent == MouseLeaveEvent)
             {
@@ -162,7 +160,7 @@ namespace ColorQuery
                 lastMouseTimestamp = e.Timestamp;
             }
         }
-        private void previewImg_MouseWheel(object _, MouseWheelEventArgs e)
+        private void previewImg_MouseWheel(object _s, MouseWheelEventArgs e)
         {
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
             {
@@ -178,7 +176,7 @@ namespace ColorQuery
             }
         }
 
-        private void CopyCmd_Exec(object _, ExecutedRoutedEventArgs e)
+        private void CopyCmd_Exec(object _s, ExecutedRoutedEventArgs e)
         {
             var format = e.Parameter is ColorFormat f ? f : model.Format;
 
@@ -189,7 +187,7 @@ namespace ColorQuery
             Task.Delay(2000).ContinueWith(t => model.Footer = "");
         }
 
-        private void ZoomCmd_Exec(object _, ExecutedRoutedEventArgs e)
+        private void ZoomCmd_Exec(object _s, ExecutedRoutedEventArgs e)
         {
             var amount = e.Parameter is double param ? param : bigZoomChange;
 
@@ -206,7 +204,7 @@ namespace ColorQuery
                 model.Zoom = (double)e.Parameter;
             }
         }
-        private void ZoomCmd_CanExec(object _, CanExecuteRoutedEventArgs e)
+        private void ZoomCmd_CanExec(object _s, CanExecuteRoutedEventArgs e)
         {
             if (e.Command == NavigationCommands.IncreaseZoom)
             {
@@ -218,7 +216,7 @@ namespace ColorQuery
             }
         }
 
-        private void miAbout_Click(object _, RoutedEventArgs __)
+        private void miAbout_Click(object _s, RoutedEventArgs _e)
         {
             var about = new AboutBox();
             about.ShowDialog();
