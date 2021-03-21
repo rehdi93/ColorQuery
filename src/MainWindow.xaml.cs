@@ -146,7 +146,7 @@ namespace ColorQuery
                 model.Color = GetPixelColor((BitmapSource)image.Source, pos);
                 model.Position = pos;
 
-                zoomCenter = e.GetPosition((ScrollViewer)image.Parent);
+                zoomCenter = e.GetPosition(scrollview);
             }
         }
         private void previewImg_MouseMove(object sender, MouseEventArgs e)
@@ -170,7 +170,7 @@ namespace ColorQuery
 
                 if (command.CanExecute(null, previewImg))
                 {
-                    zoomCenter = e.GetPosition((ScrollViewer)previewImg.Parent);
+                    zoomCenter = e.GetPosition(scrollview);
                     command.Execute(smallZoomChange, previewImg);
                 }
 

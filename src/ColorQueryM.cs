@@ -35,8 +35,8 @@ namespace ColorQuery
         }
         public Point Position
         {
-            get { return colorPos; }
-            set { SetProperty(ref colorPos, value); }
+            get { return pos; }
+            set { SetProperty(ref pos, value); }
         }
 
 
@@ -113,6 +113,6 @@ namespace ColorQuery
         Color color;
         ColorFormat format;
         double zoom = 1;
-        Point colorPos;
+        Point pos;
     }
 }
